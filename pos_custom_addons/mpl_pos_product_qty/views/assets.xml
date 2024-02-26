@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="pos_qty_assets_backend" name="Product Qty Backend" inherit_id="point_of_sale.assets">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/mpl_pos_product_qty/static/src/js/pos_show_product_qty.js"/>
+            <script type="text/javascript" src="/mpl_pos_product_qty/static/src/js/ReceiptScreen.js"/>
+            <link rel="stylesheet" href="/mpl_pos_product_qty/static/src/css/pos.css"/>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+    	<!-- Paperformat -->
+		<record id="product_profit_report_paperformat"
+            model="report.paperformat">
+            <field name="name">ACC Product Profit Report Paperformat</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">25</field>
+            <field name="margin_bottom">10.00</field>
+            <field name="margin_left">4.00</field>
+            <field name="margin_right">4.00</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">25</field>
+            <field name="dpi">140</field>
+        </record>
+
+        <report 
+            id="product_profit_report_pdf"
+            model="product.profit.report"
+            string="Product Profit Detailed Report"
+            report_type="qweb-pdf"
+            name="acc_stock.report_product_profit_template"
+            file="acc_stock.report_product_profit_template"
+            paperformat="acc_stock.product_profit_report_paperformat"
+            />
+        
+            
+        <template id="report_product_profit_template">
+    		<t t-call="web.html_container">
+	      		<t t-foreach="docs" t-as="doc">
+			        <t t-if="o and 'company_id' in o">
+			            <t t-set="company" t-value="o.company_id"></t>
+			        </t>
+			        <t t-if="not o or not 'company_id' in o">
+			            <t t-set="company" t-value="res_company"></t>
+			        </t>
+			       <div class="header">
+			       	<table class="table table-sm table-borderless">
+                        <tr style="border-bottom:1px solid black">
+                            <td class='text-center'>
+                                <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)" style="max-height: 120px;" />
+                            </td>
+                            <td colspan='3' class='text-center'>
+                                <strong><span style="font-size:30px;margin-right:200px" t-field="doc.company_id.name"/></strong><br/>
+                                <strong><span style="margin-right:200px">TRN ID: <span t-field="doc.company_id.vat"/></span></strong><br/>
+                                <span style="margin-right:200px"><b>OFFICE:</b> <span  t-field="doc.company_id.street"/>, <span t-field="doc.company_id.street2"/>, <span t-field="doc.company_id.state_id.name"/>, <span t-field="doc.company_id.country_id.name"/>.</span><br/>
+                                <span style="margin-right:200px"><b>WAREHOUSE:</b> <span  t-field="doc.company_id.war_street"/>, <span t-field="doc.company_id.war_street2"/>, <span t-field="doc.company_id.war_state_id.name"/>, <span t-field="doc.company_id.war_country_id.name"/>.</span><br/>
+                                <span style="margin-right:200px">Email: <span t-field="doc.company_id.email"/>, accounts@accgulf.com | <span>Phone: </span><span t-field="doc.company_id.phone"/>.</span>
+                            </td>
+                        </tr>
+                    </table>
+					</div>
+					<t t-call="web.basic_layout">
+            			<t t-set="doc" t-value="doc.with_context({'lang':zh_CN})" />
+                        <div class="pt-5" style="padding-top:2rem !important"></div>
+		               <div class="page">
+		                <table  class="table table-borderless table-sm">
+                            <tr>
+                                <td colspan='4' style="background-color:#ff9800;border:1px solid black !important;font-weight:bold;vertical-align:middle">
+                                    <h4><center>Product Profit Detailed Report</center></h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Company:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.company_id.name" class='text-left'/></b>
+                                </td>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                	 Report Date :
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-if='doc.crt_date'><t t-esc="doc.crt_date" t-options="{&quot;widget&quot;: &quot;date&quot;}" class='text-left'/></t></b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    From Date :
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-if='doc.from_date'><t t-esc="doc.from_date" t-options="{&quot;widget&quot;: &quot;date&quot;}" class='text-left'/></t></b>
+                                </td>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                	To Date :
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                	<b><t t-if='doc.to_date'><t t-esc="doc.to_date" t-options="{&quot;widget&quot;: &quot;date&quot;}" class='text-left'/></t></b>
+                                </td>
+                            </tr>
+                        </table>
+			               <table style="margin-top:20px;width:100% !important;" class="table table-borderless table-sm">
+			               		<thead>
+				                	<tr>
+				                		<b>
+				                		<!-- <td style="border:1px solid black !important;background-color:#ff9800;width:2% !important;color: black;" class="text-center">S.No</td> -->
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:35% !important;color: black;" class="text-center">Description</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:12% !important;color: black;" class="text-center">Quantity Sold</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:12% !important;color: black;" class="text-center">Sales</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:12% !important;color: black;" class="text-center">Cost</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:12% !important;color: black;" class="text-center">Profit</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:12% !important;color: black;" class="text-center">Margin</td>
+				                	</b>
+				                	</tr>
+				                </thead>
+				                <tbody class="product_profit_report_tbody">
+				                	<t t-set="total_qty" t-value="0" />
+				                	<t t-set="total_sales" t-value="0" />
+				                	<t t-set="total_cost" t-value="0" />
+				                	<t t-foreach="doc.report_product_profit_detail_ids" t-as="l">
+				                		<t t-if='l.is_parent == False'>
+						                    <tr>
+						                    	<!-- <td style="border:1px solid black !important;text-align:center">
+													<span t-esc="sno" />
+												</td> -->
+												<td style="border:1px solid black !important;text-align:left">
+													<span t-field="l.categ_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="qty_sold" t-value="l.qty_sold" />
+													<span t-esc="'{:,.2f}'.format(qty_sold)"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="sales" t-value="l.sales" />
+													<span t-esc="'{:,.2f}'.format(sales)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="cost" t-value="l.cost" />
+													<span t-esc="'{:,.2f}'.format(cost)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="profit" t-value="l.profit" />
+													<span t-esc="'{:,.2f}'.format(profit)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="margin" t-value="l.margin" />
+													<span t-esc="'{:,.2f}'.format(margin)"/>
+												</td>
+												<t t-set="total_qty" t-value="total_qty+l.qty_sold" />
+												<t t-set="total_sales" t-value="total_sales+l.sales" />
+												<t t-set="total_cost" t-value="total_cost+l.cost" />
+						                    </tr>
+						                </t>
+						                <t t-if='l.is_parent == True'>
+						                    <tr>
+						                    	<!-- <td style="border:1px solid black !important;text-align:center">
+													<span t-esc="sno" />
+												</td> -->
+												<td style="border:1px solid black !important;text-align:left;background-color:#dedcdd">
+													<span t-field="l.categ_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="qty_sold" t-value="l.qty_sold" />
+													<span t-esc="'{:,.2f}'.format(qty_sold)"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="sales" t-value="l.sales" />
+													<span t-esc="'{:,.2f}'.format(sales)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="cost" t-value="l.cost" />
+													<span t-esc="'{:,.2f}'.format(cost)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="profit" t-value="l.profit" />
+													<span t-esc="'{:,.2f}'.format(profit)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="margin" t-value="l.margin" />
+													<span t-esc="'{:,.2f}'.format(margin)"/>
+												</td>
+						                    </tr>
+						                </t>
+									</t>
+									<tr>
+				                		<b><td style="border-left:1px solid black !important;border-bottom:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right" colspan='1'>Grand Total</td>
+				                		<td style="border-bottom:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right"><span t-esc="'{:,.2f}'.format(total_qty)"/></td>
+				                		<td style="border-bottom:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right"><span t-esc="'{:,.2f}'.format(total_sales)"/><span> </span>
+										<span t-field="doc.company_id.currency_id.name"/></td>
+				                		<td style="border-bottom:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right"><span t-esc="'{:,.2f}'.format(total_cost)"/><span> </span>
+										<span t-field="doc.company_id.currency_id.name"/></td>
+				                		<t t-set="profit_total" t-value="total_sales-total_cost" />
+				                		<td style="border-bottom:1px solid black !important;color: black;vertical-align:middle;text-align:right;background-color:#dedcdd"><span t-esc="'{:,.2f}'.format(profit_total)"/><span> </span>
+										<span t-field="doc.company_id.currency_id.name"/>
+				                		</td>
+				                		<t t-set="margin_val_total" t-value="(total_sales * total_qty)-(total_cost * total_qty)" />
+				                		<t t-set="margin_total" t-value="0" />
+				                			<t t-if='margin_val_total'>
+				                				<t t-set="margin_total" t-value="(margin_val_total/(total_sales * total_qty))*100" />
+				                			</t>
+				                		<td style="border-bottom:1px solid black !important;border-right:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right"><span t-esc="'{:,.2f}'.format(margin_total)"/></td>
+					                	</b>
+					                </tr>
+			               	     </tbody>
+			                </table>
+
+			                <table style="margin-top:10px;width:100% !important;" class="table table-borderless table-sm">
+			               		<thead>
+				                	<tr>
+				                		<b>
+				                		<!-- <td style="border:1px solid black !important;background-color:#ff9800;width:2% !important;color: black;" class="text-center">S.No</td> -->
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:10% !important;color: black;" class="text-center">Code</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:35% !important;color: black;" class="text-center">Description</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:10% !important;color: black;" class="text-center">Quantity Sold</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:10% !important;color: black;" class="text-center">Sales</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:10% !important;color: black;" class="text-center">Cost</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:10% !important;color: black;" class="text-center">Profit</td>
+				                		<td style="border:1px solid black !important;background-color:#ff9800;width:10% !important;color: black;" class="text-center">Margin</td>
+				                	</b>
+				                	</tr>
+				                </thead>
+				                <tbody class="product_wise_report_tbody">
+				                	<t t-set="total_qty" t-value="0" />
+				                	<t t-set="total_sales" t-value="0" />
+				                	<t t-set="total_cost" t-value="0" />
+				                	<t t-foreach="doc.report_product_wise_detail_ids" t-as="l">
+				                		<t t-if='l.is_parent == False'>
+						                    <tr>
+						                    	<!-- <td style="border:1px solid black !important;text-align:center">
+													<span t-esc="sno" />
+												</td> -->
+												<td style="border:1px solid black !important;text-align:center">
+													<span t-field="l.code"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:left">
+													<span t-field="l.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="qty_sold" t-value="l.qty_sold" />
+													<span t-esc="'{:,.2f}'.format(qty_sold)"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="sales" t-value="l.sales" />
+													<span t-esc="'{:,.2f}'.format(sales)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="cost" t-value="l.cost" />
+													<span t-esc="'{:,.2f}'.format(cost)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="profit" t-value="l.profit" />
+													<span t-esc="'{:,.2f}'.format(profit)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right">
+													<t t-set="margin" t-value="l.margin" />
+													<span t-esc="'{:,.2f}'.format(margin)"/>
+												</td>
+						                    </tr>
+						                </t>
+						                <t t-if='l.is_parent == True'>
+						                    <tr>
+						                    	<!-- <td style="border:1px solid black !important;text-align:center">
+													<span t-esc="sno" />
+												</td> -->
+												<td colspan='2' style="border:1px solid black !important;text-align:left;background-color:#dedcdd">
+													<span t-field="l.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="qty_sold" t-value="l.qty_sold" />
+													<span t-esc="'{:,.2f}'.format(qty_sold)"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="sales" t-value="l.sales" />
+													<span t-esc="'{:,.2f}'.format(sales)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="cost" t-value="l.cost" />
+													<span t-esc="'{:,.2f}'.format(cost)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="profit" t-value="l.profit" />
+													<span t-esc="'{:,.2f}'.format(profit)"/><span> </span>
+													<span t-field="doc.company_id.currency_id.name"/>
+												</td>
+												<td style="border:1px solid black !important;text-align:right;background-color:#dedcdd">
+													<t t-set="margin" t-value="l.margin" />
+													<span t-esc="'{:,.2f}'.format(margin)"/>
+												</td>
+												<t t-set="total_qty" t-value="total_qty+l.qty_sold" />
+												<t t-set="total_sales" t-value="total_sales+l.sales" />
+												<t t-set="total_cost" t-value="total_cost+l.cost" />
+						                    </tr>
+						                </t>
+									</t>
+									<tr>
+				                		<b><td style="border-left:1px solid black !important;border-bottom:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right" colspan='2'>Grand Total</td>
+				                		<td style="border-bottom:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right"><span t-esc="'{:,.2f}'.format(total_qty)"/></td>
+				                		<td style="border-bottom:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right"><span t-esc="'{:,.2f}'.format(total_sales)"/><span> </span>
+										<span t-field="doc.company_id.currency_id.name"/></td>
+				                		<td style="border-bottom:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right"><span t-esc="'{:,.2f}'.format(total_cost)"/><span> </span>
+										<span t-field="doc.company_id.currency_id.name"/></td>
+				                		<t t-set="profit_total" t-value="total_sales-total_cost" />
+				                		<td style="border-bottom:1px solid black !important;color: black;vertical-align:middle;text-align:right;background-color:#dedcdd"><span t-esc="'{:,.2f}'.format(profit_total)"/><span> </span>
+										<span t-field="doc.company_id.currency_id.name"/></td>
+				                		<t t-set="margin_val_total" t-value="(total_sales * total_qty)-(total_cost * total_qty)" />
+				                		<t t-set="margin_total" t-value="0" />
+				                			<t t-if='margin_val_total'>
+				                				<t t-set="margin_total" t-value="(margin_val_total/(total_sales * total_qty))*100" />
+				                			</t>
+
+				                		<td style="border-bottom:1px solid black !important;border-right:1px solid black !important;color: black;vertical-align:middle;background-color:#dedcdd;text-align:right"><span t-esc="'{:,.2f}'.format(margin_total)"/></td>
+					                	</b>
+					                </tr>
+			               	     </tbody>
+			                </table>
+		           	</div>
+      			</t>
+      		</t>
+      		<div class="footer" style="text-align:center;font-size:16px">
+		            <span class="text-center">Page</span>
+		            <span class="page" />
+		            of
+		            <span class="topage" />
+		        </div>
+   		 </t>
+ 		</template>
+	</data>
+</odoo>
+
+             

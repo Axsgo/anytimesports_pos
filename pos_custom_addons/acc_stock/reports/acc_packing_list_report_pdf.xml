@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Paperformat -->
+    <record id="acc_packing_list_paperformat"
+        model="report.paperformat">
+        <field name="name">ACC Packing List Paperformat</field>
+        <field name="default" eval="True" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10.00</field>
+        <field name="margin_bottom">25.00</field>
+        <field name="margin_left">4.00</field>
+        <field name="margin_right">4.00</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">10</field>
+        <field name="dpi">140</field>
+    </record>
+
+    <record id="action_acc_packing_list_pdf" model="ir.actions.report">
+        <field name="name">Packing List Report</field>
+        <field name="model">acc.stock.packing.list</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">acc_stock.acc_stock_packing_list_pdf_template</field>
+        <field name="report_file">acc_stock.acc_stock_packing_list_pdf_template</field>
+        <field name="print_report_name">object.get_report_name()</field>
+        <field name="binding_model_id" ref="acc_stock.model_acc_stock_packing_list"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="acc_stock.acc_packing_list_paperformat"/>
+    </record>
+
+    <template id="acc_stock_packing_list_pdf_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <!-- <t t-call="sale.report_saleorder_document" t-lang="doc.partner_id.lang"/> -->
+                <t t-if="o and 'company_id' in o">
+                    <t t-set="company" t-value="o.company_id"></t>
+                </t>
+                <t t-if="not o or not 'company_id' in o">
+                    <t t-set="company" t-value="res_company"></t>
+                </t>
+                <div class="header">
+                    <br/>
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td>
+                                <span t-field="doc.name"/> <span t-field="doc.entry_date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                            </td>
+                            <td class="text-right">
+                                <span>Page: </span><span class="page" /> / <span class="topage" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <t t-call="web.basic_layout">
+                    <t t-set="doc" t-value="doc.with_context({'lang':en_GB})" />
+                    <div class="page">
+                        <table style="width:100% !important">
+                            <tr style="border-bottom:1px solid black">
+                                <td colspan='3' class='text-left' style="vertical-align:top">
+                                    <strong><span style="font-size:30px;" t-field="doc.company_id.name"/></strong><br/>
+                                    <strong><span >TRN ID: <span t-field="doc.company_id.vat"/></span></strong><br/>
+                                    <span><b>OFFICE:</b> <span  t-field="doc.company_id.street"/>, <span t-field="doc.company_id.street2"/>, <span t-field="doc.company_id.state_id.name"/>, <span t-field="doc.company_id.country_id.name"/>.</span><br/>
+                                    <span><b>WAREHOUSE:</b> <span  t-field="doc.company_id.war_street"/>, <span t-field="doc.company_id.war_street2"/>, <span t-field="doc.company_id.war_state_id.name"/>, <span t-field="doc.company_id.war_country_id.name"/>.</span><br/>
+                                    <b><span>EMAIL: </span></b><span t-field="doc.company_id.email"/><span>, accounts@accgulf.com</span><br/>
+                                    <b><span>PHONE: </span></b><span t-field="doc.company_id.phone"/><br/>
+                                </td>
+                                <td class='text-right' style="vertical-align:middle">
+                                    <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)" style="max-height: 200px;" />
+                                </td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <table class="table table-borderless table-sm">
+                            <tr>
+                                <td colspan='4' style="background-color:#ff9800;border:1px solid black !important;font-weight:bold;vertical-align:middle">
+                                    <h4><center><b>PACKING LIST</b></center></h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    No:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.name" class='text-left'/></b>
+                                </td>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Date:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.entry_date" t-options="{&quot;widget&quot;: &quot;date&quot;}" class='text-left'/></b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Customer:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.partner_id.name" class='text-left'/></b>
+                                </td>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Sale Order:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc._get_so_name()" class='text-left'/></b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Deliveries:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc._get_do_name()" class='text-left'/></b>
+                                </td>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Invoices:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc._get_inv_name()" class='text-left'/></b>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:3% !important;font-weight:bold;vertical-align:middle" class="text-center">Sl.No</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:5% !important;font-weight:bold;vertical-align:middle" class="text-center">ORIGIN</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:10% !important;font-weight:bold;vertical-align:middle" class="text-center">PRODUCT CODE</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:5% !important;font-weight:bold;vertical-align:middle" class="text-center">QTY</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:25% !important;font-weight:bold;vertical-align:middle" class="text-center">DESCRIPTION</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:7% !important;font-weight:bold;vertical-align:middle" class="text-center">H.S CODE</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:15% !important;font-weight:bold;vertical-align:middle" class="text-center">DIMENSION</td>
+                                <t t-if="doc.disable_carton == False">
+                                    <td style="border:1px solid black !important;background-color:#ff9800;width:5% !important;font-weight:bold;vertical-align:middle" class="text-center">NO.OF. CARTONS</td>
+                                    <td style="border:1px solid black !important;background-color:#ff9800;width:5% !important;font-weight:bold;vertical-align:middle" class="text-center">NO.OF. PCS PER CARTONS</td>
+                                </t>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:5% !important;font-weight:bold;vertical-align:middle" class="text-center">NET WEIGHT [KG]</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:5% !important;font-weight:bold;vertical-align:middle" class="text-center">GROSS WEIGHT [KG]</td>
+                            </tr>
+                            <tr>
+                                <t t-set="sno" t-value="1" />
+                                <t t-set="total" t-value='0'/>
+                                <t t-set="total_net" t-value='0'/>
+                                <t t-set="total_gross" t-value='0'/>
+                                <t t-if="doc.disable_carton == False"> 
+                                    <t t-set="pack_col" t-value='3'/>
+                                </t>
+                                <t t-else="">
+                                    <t t-set="pack_col" t-value='1'/>
+                                </t>
+                                <t t-foreach="doc.line_ids" t-as="l">
+                                    <tr>
+                                        <td style="border:1px solid black !important;vertical-align:middle" class="text-center">
+                                            <span t-esc="sno" />
+                                        </td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.product_id.country_id.code"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.product_id.default_code"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                            <span t-field="l.qty"/>
+                                            <span t-field="l.product_uom_id.name"/>
+                                        </td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.product_id.name"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.product_id.hs_code"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.dimension"/></td>
+                                        <t t-if="doc.disable_carton == False">
+                                            <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right"><span t-field="l.cartons_count"/></td>
+                                            <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right"><span t-field="l.pieces_count"/></td>
+                                        </t>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                            <span t-field="l.net_weight"/>
+                                        </td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                            <span t-field="l.gross_weight"/>
+                                        </td>
+                                        <t t-set="sno" t-value="sno+1" />
+                                        <t t-set="total_net" t-value='total_net + l.net_weight'/>
+                                        <t t-set="total_gross" t-value='total_gross + l.gross_weight'/>
+                                        <t t-set="total" t-value='total + l.qty'/>
+                                    </tr>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td colspan='3' style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                    <b>TOTAL QUANTITY:</b>
+                                </td>   
+                                <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                    <b><t t-esc="'%.2f'%(total)"/></b>
+                                </td>
+                                <td style="border: 1px solid black !important;vertical-align:middle;" ></td>
+                                <td style="border: 1px solid black !important;vertical-align:middle;" ></td>
+                                <td t-att-colspan='pack_col' style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                   <b> TOTAL PACKING: <span t-field="doc.pallet_count"/> <span t-field="doc.pack_type"/></b>
+                                </td>   
+                                <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                    <b><t t-esc='total_net'/></b>
+                                </td>
+                                <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                    <b><t t-esc='total_gross'/></b>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="footer">
+                        <table class="table table-borderless table-sm">
+                            <tr>
+                                <td colspan='2' class='text-center'>
+                                    <b>**** This is system generated document no signature required ****</b>
+                                </td>
+                            </tr>
+                        </table>
+                        <table style="width:100% !important">
+                            <tr>
+                                <td class="text-center" colspan='2' style="border-top:1px solid black">
+                                    <img t-if="company.brand_footer" t-att-src="'data:image/png;base64,%s' % to_text(company.brand_footer)" style="height: 100px;width:1300px" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

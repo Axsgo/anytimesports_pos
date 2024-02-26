@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="shop_header" inherit_id="website.layout" name="Shop Header">
+        <xpath expr="//header" position="replace">
+            <header class="header-area header-sticky">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <nav class="main-nav sticky-top">
+                                <!-- ***** Logo Start ***** -->
+                                <a href="/" class="logo">
+                                    <img class="pt-2" src="/theme_home/static/src/img/logo.png"/>
+                                </a>
+                                <!-- ***** Logo End ***** -->
+                                <!-- ***** Menu Start ***** -->
+                                <ul class="nav">
+                                    <li class="scroll-to-section">
+                                        <a href="/" class="active">Home</a>
+                                    </li>
+                                    <li class="scroll-to-section">
+                                        <a href="/#men">Men's</a>
+                                    </li>
+                                    <li class="scroll-to-section">
+                                        <a href="/#women">Women's</a>
+                                    </li>
+                                    <li class="scroll-to-section">
+                                        <a href="/#kids">Kid's</a>
+                                    </li>
+                                    <li class="scroll-to-section">
+                                        <a href="/products">Products</a>
+                                    </li>
+                                    <li class="scroll-to-section">
+                                        <a href="/about-us">About Us</a>
+                                    </li>
+                                    <li class="scroll-to-section">
+                                        <a href="/contactus">Contact Us</a>
+                                    </li>
+                                    <!--<li class="submenu">
+                                        <a href="javascript:;">Pages</a>
+                                        <ul>
+                                            <li>
+                                                <a href="/about-us">About Us</a>
+                                            </li>
+                                            &lt;!&ndash;<li>
+                                                <a href="/products">Products</a>
+                                            </li>&ndash;&gt;
+                                            <li>
+                                                <a href="/product-view">Single Product</a>
+                                            </li>
+                                            <li>
+                                                <a href="/contactus">Contact Us</a>
+                                            </li>
+                                        </ul>
+                                    </li>-->
+                                    <!--<li class="submenu">
+                                        <a href="javascript:;">Features</a>
+                                        <ul>
+                                            <li>
+                                                <a href="#">Features Page 1</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Features Page 2</a>
+                                            </li>
+                                            <li>
+                                                <a href="#">Features Page 3</a>
+                                            </li>
+                                            <li>
+                                                <a rel="nofollow" href="https://templatemo.com/page/4" target="_blank">
+                                                    Template Page 4
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>-->
+                                    <!--<li class="scroll-to-section">
+                                        <a href="/testimonials">Testimonials</a>
+                                    </li>-->
+                                    <li class="scroll-to-section">
+                                        <a href="/mycart">My Cart</a>
+                                    </li>
+                                    <!--<li class="scroll-to-section">
+                                        <a href="#explore">Explore</a>
+                                    </li>-->
+                                </ul>
+                                <a class='menu-trigger'>
+                                    <span>Menu</span>
+                                </a>
+                                <!-- ***** Menu End ***** -->
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        </xpath>
+    </template>
+</odoo>

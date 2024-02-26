@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_only_form_view_inherit_for_anytime_pos" model="ir.ui.view">
+        <field name="name">Product Form Inherit for Anytime POS</field>
+        <field name="model">product.template</field>
+        <field name="priority" eval="50"/>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <field name="barcode" position="attributes">
+                <attribute name="invisible">False</attribute>
+            </field>
+            <field name="default_code" position="attributes">
+                <attribute name="required">False</attribute>
+            </field>
+            <field name="company_id" position="before">
+                <field name="usd_currency_id" invisible="1"/>
+                <field name="rp_aed"/>
+                <field name="rp_usd"/>
+                <field name="uc_usd"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="acc_product_form_view_inherit_for_anytime_pos" model="ir.ui.view">
+        <field name="name">Product Form (acc_stock) Inherit for Anytime POS</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="acc_stock.acc_product_form_view"/>
+        <field name="arch" type="xml">
+            <field name="manufacturer_id" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="options">{}</attribute>
+            </field>
+            <field name="country_id" position="attributes">
+                <attribute name="attrs">{}</attribute>
+                <attribute name="options">{}</attribute>
+            </field>
+        </field>
+    </record>
+
+</odoo>

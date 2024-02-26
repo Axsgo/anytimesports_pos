@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+    	<!-- Paperformat -->
+		<record id="ax_expense_statement_report_paperformat"
+            model="report.paperformat">
+            <field name="name">Axsgo Expense Statement Report Paperformat</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">8</field>
+            <field name="margin_bottom">15.00</field>
+            <field name="margin_left">4.00</field>
+            <field name="margin_right">4.00</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <report 
+            id="expense_statement_report_pdf"
+            model="expense.statement.report"
+            string="Expense Statement"
+            report_type="qweb-pdf"
+            name="acc_costing.report_expense_statement_template"
+            file="acc_costing.report_expense_statement_template"
+            paperformat="acc_costing.ax_expense_statement_report_paperformat"
+            />
+        
+            
+        <template id="report_expense_statement_template">
+    		<t t-call="web.html_container">
+	      		<t t-foreach="docs" t-as="doc">
+			        <t t-if="o and 'company_id' in o">
+			            <t t-set="company" t-value="o.company_id"></t>
+			        </t>
+			        <t t-if="not o or not 'company_id' in o">
+			            <t t-set="company" t-value="res_company"></t>
+			        </t>
+			       <div class="header">
+					</div>
+					<t t-call="web.external_layout">
+            			<t t-set="doc" t-value="doc.with_context({'lang':zh_CN})" />
+		               <div class="page">
+		               	<div class="oe_structure"/>
+		                <table class="table table-sm table-borderless">
+		                	<tr>
+                                <td style="padding-left: 80px;">
+                                    <img t-if="env.company.logo" t-att-src="'data:image/png;base64,%s' % to_text(env.company.logo)" style="max-height: 90px;" />
+                                </td>
+                                <td colspan='3'>
+                                    <strong><center><h2 style="margin-right:140px;"><span t-field="env.company.name"/></h2></center></strong>
+                                    <center style="margin-right:140px;"><span  t-field="env.company.street"/>,<span t-field="env.company.street2"/>,<span t-field="env.company.city"/>, 
+                                    <span t-field="env.company.zip"/></center>
+                                    <center style="margin-right:140px;"><span>Email: </span><span t-field="env.company.email"/>,<span>Phone: </span><span t-field="env.company.phone"/></center>
+                                </td>
+                            </tr>
+		                </table>
+		                <table style="width:100%" >
+		                	<tr>
+		                		<td style="width:50%;" >
+		                        	<span>From Date : </span><t t-if='doc.from_date'><t t-esc="doc.from_date.strftime('%d-%m-%Y')"/></t><br/>
+			                    </td>
+			                    <td style="width:50%;" >
+		                        	<span>To Date : </span><t t-if='doc.to_date'><t t-esc="doc.to_date.strftime('%d-%m-%Y')"/></t><br/>
+			                    </td>
+		                	</tr>
+		
+		                </table>
+
+		                <table style="width:100%;margin-top: 30px;" >
+		                	<tr>
+		                		<td style="width:100%;" >
+			                        <t>
+		                				<h5>Expense Statement</h5>
+		                			</t>
+			                	</td>
+		                	</tr>
+		
+		                </table>
+		               <table class="table table-sm table-borderless">
+		                	<thead>
+			                	<tr>
+			                		<b><td style="border:1px solid black !important;background-color:#a9a6a6;width:5% !important;color: black;" class="text-left">Sl.No</td>
+			                		<td style="border:1px solid black !important;background-color:#a9a6a6;width:20% !important;color: black;" class="text-left">Category</td>
+			                		<td style="border:1px solid black !important;background-color:#a9a6a6;width:25% !important;color: black;" class="text-left">Account</td>
+			                		<td style="border:1px solid black !important;background-color:#a9a6a6;width:20% !important;color: black;" class="text-left">Account Code</td>
+			                		<td style="border:1px solid black !important;background-color:#a9a6a6;width:20% !important;color: black;" class="text-left">Total Amount</td>
+			                	</b>
+			                	</tr>
+			                </thead>
+			                <tbody class="expense_tbody">
+			                	<t t-set="sno" t-value="1" />
+			                	<t t-set="tot_amount" t-value="0" />
+			                	<t t-foreach="doc.report_expense_ids" t-as="l">
+				                    <tr>
+				                    	<td style="border:1px solid black !important">
+											<span t-esc="sno" />
+										</td>
+				                        <td style="border: 1px solid black !important;" >
+				                            <span t-field="l.category"/>
+				                        </td>
+				                        <td style="border: 1px solid black !important;" >
+				                            <span t-field="l.account"/>
+				                        </td>
+				                        
+				                        <td style="border: 1px solid black !important;">
+				                            <span t-field="l.acc_code"/>
+				                        </td>
+				                        <td style="border: 1px solid black !important;" class="text-right">
+				                            <span t-field="l.total"/>
+				                        </td>
+				                        <t t-if='l.account'>
+											<t t-set="sno" t-value="sno+1" />
+										</t>
+										<t t-if='l.total'>
+											<t t-set="tot_amount" t-value="tot_amount + l.total" />
+										</t>
+				                    </tr>
+								</t>
+		               	     </tbody>
+		                </table>
+		                <table style="width:60%;margin-left:178px;margin-top:30px" class="table table-sm table-borderless">
+                                <tr>
+                                    <td style="border:1px solid black !important;background-color:#a9a6a6;width:35%" class="text-left">
+                                        <span>Net Total</span>
+                                    </td>
+                                    <td style="border:1px solid black !important;width:25%" class="text-right">
+                                        <span t-field="env.company.currency_id.symbol"/><span> </span><span t-esc="'%.2f'% (tot_amount)" />
+                                    </td>
+                                </tr>
+                            </table>
+		           	</div>
+      			</t>
+      		</t>
+   		 </t>
+ 		</template>
+	</data>
+</odoo>
+
+             

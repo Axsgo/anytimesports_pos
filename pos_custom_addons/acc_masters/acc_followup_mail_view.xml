@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<!-- Form view -->
+        <record id="acc_followup_mail_form_view" model="ir.ui.view">
+            <field name="name">Followup Mail</field>
+            <field name="model">acc.followup.mail</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+				<form string="Followup Mail">
+					<header>
+						<button name = "entry_approve" type = "object" string = "Approve" states = "draft" class = "oe_highlight"/>
+						<button name="entry_send_mail" type="object" string="Send Manually" class='oe_highlight'/>
+						<button name = "entry_draft" type = "object" string = "Set to Draft" states = "approved"/>
+						<button name = "entry_cancel" type = "object" string = "Cancel" states = "draft"/>
+						<field name="state" widget="statusbar" statusbar_visible='draft,approved,cancel'/>
+					</header>
+					<sheet> 
+						<div class="oe_title">
+	                        <h1>
+	                            <field name="name" readonly="1"/>
+	                        </h1>
+	                    </div>
+						<group> 
+							<group>
+								<field name="partner_id" attrs="{'readonly':[('state','!=','draft')]}" required='1' options="{'no_create': True, 'no_create_edit':True}"/>
+								<field name="phone" required='0' attrs="{'readonly':[('state','!=','draft')]}" force_save='1'/>
+								<field name="alert_by_mail" required='1' attrs="{'readonly':[('state','!=','draft')]}" force_save='1'/>
+								<field name="notes" required='0' attrs="{'readonly':[('state','!=','draft')]}"/>
+							</group>
+							<group>
+								<field name="entry_date" readonly='1' force_save='1'/>
+								<!-- <field name="email" required='0' attrs="{'readonly':[('state','!=','draft')]}" force_save='1'/> -->
+								<field name="alert_by" required='0' attrs="{'readonly':[('state','!=','draft')]}" options="{'no_create': True, 'no_create_edit':True}"/>
+								<field name="alert_date" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="model_id" required='1' attrs="{'readonly':[('state','!=','draft')]}" options="{'no_create': True, 'no_create_edit':True}"/>
+							</group>
+						</group>
+						<group>
+							<field name="mailto_ids" required='1' attrs="{'readonly':[('state','!=','draft')]}" nolabel='1'>
+								<tree editable='bottom'>
+									<field name="email"/>
+									<field name="is_to"/>
+									<field name="is_cc"/>
+								</tree>
+							</field>
+						</group>
+						<notebook>
+							<page string="Followup Message">
+								<group>
+									<group>
+										<field name="alert_subject" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+									</group>
+									<field name="alert_msg" widget="html" required='1' nolabel='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+								</group>
+							</page>
+							<page string = "Entry Info">
+								<group>
+									<group>
+										<field name="company_id" force_save='1' attrs="{'readonly':[('state','!=','draft')]}" options="{'no_create': True, 'no_create_edit':True}" groups="base.group_multi_company"/>
+									</group>
+									<group></group>
+									<group>
+										<field name = "user_id"/>
+										<field name = "update_user_id"/>
+										<field name = "ap_rej_user_id"  attrs = "{'invisible':[('state','=','draft')]}"/>
+										<field name = "cancel_user_id"  attrs = "{'invisible':[('state','!=','cancel')]}"/>
+									</group>
+									<group>
+										<field name = "crt_date"/>
+										<field name = "update_date"/>
+										<field name = "ap_rej_date"  attrs = "{'invisible':[('state','=','draft')]}"/>
+										<field name = "cancel_date"  attrs = "{'invisible':[('state','!=','cancel')]}"/>
+									</group>
+								</group>
+							</page>		
+						</notebook>
+					</sheet>
+				</form>
+            </field>
+        </record>
+        <!-- Tree View -->
+        <record id="acc_followup_mail_tree_view" model="ir.ui.view">
+            <field name="name">Followup Mail</field>
+            <field name="model">acc.followup.mail</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+             <tree string="Followup Mail"  
+				decoration-info = "state == 'draft'" decoration-bf = "state == 'approved'" default_order = "crt_date desc"> 
+				<field name="crt_date"/>
+				<field name="user_id"/>
+				<field name="name" />
+				<field name="entry_date"/>
+				<field name="partner_id"/>
+				<field name="phone"/>
+				<field name="alert_by_mail"/>
+				<field name="alert_date"/>
+				<field name="state"/>  			 
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search View Start -->
+	
+	<record id="acc_followup_mail_search_view" model="ir.ui.view">
+		<field name="name">Followup Mail</field>
+		<field name="model">acc.followup.mail</field>
+		<field name="arch" type="xml">
+			<search string="Followup Mail">
+				<field name="name" string="Name"  filter_domain="[('name','ilike',self)]" />
+				<filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+				<filter name="approved" string="Approved" domain="[('state','=','approved')]"/>				
+				<filter name="cancel" string="Cancelled" domain="[('state','=','cancel')]"/>
+				<group expand="0" string="Group By...">
+					<filter name="crt_date" string="Creation Date" domain="[]" context="{'group_by':'crt_date'}"/> 
+					<filter name="user_id" string="Created By" domain="[]" context="{'group_by':'user_id'}"/>
+					<filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+					<filter string="Customer" name="partner_id" domain="[]" context="{'group_by':'partner_id'}"/>
+				</group>
+			</search>
+		</field>
+	</record>
+	
+	<!-- Search View End -->
+
+
+
+        <record id="action_acc_followup_mail" model="ir.actions.act_window">  
+            <field name="name">Followup Mail</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">acc.followup.mail</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="acc_followup_mail_tree_view"></field>
+            <field name="search_view_id" ref="acc_followup_mail_search_view"/>
+            <field name="context">{'search_default_state':1}</field>
+        </record>
+
+        <!-- Menuitems -->
+    	<menuitem name="Followup Mails" id="pm_acc_followup_mail" parent="base.menu_administration" action="action_acc_followup_mail" sequence='0' groups="base.group_erp_manager"/>
+
+        <!-- Record Rule -->
+    	<record id="rule_acc_followup_mail" model="ir.rule">
+            <field name="name">Followup multi-company</field>
+            <field name="model_id" ref="model_acc_followup_mail"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id','in',company_ids)]</field>
+        </record>
+
+        <!-- <record id="rule_acc_followup_mail_user" model="ir.rule">
+            <field name="name">Followup Mail User</field>
+            <field name="model_id" ref="model_acc_followup_mail"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('alert_by','=',False),('alert_by','=',user.id)]</field>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+        </record> -->
+
+       <!-- Followup Mail sequence no -->
+        <record id="sequence_acc_followup_mail" model="ir.sequence">
+            <field name="name">Followup Mail Sequence</field>
+            <field name="code">acc.followup.mail</field>
+            <field name="prefix">FM</field>
+            <field name="padding">5</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- Followup Scheduler -->
+        <record id="acc_followup_mail_scheduler" model="ir.cron">
+            <field name="name">Followup Mail Scheduler</field>
+            <field name="model_id" ref="model_acc_followup_mail"/>
+            <field name="state">code</field>
+            <field name="code">model._entry_send_followup_mail('approved')</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+        <!-- Followup Mail Mail -->
+        <record id="email_template_acc_followup_mail" model="mail.template">
+            <field name="name">Followup Mail</field>
+            <field name="model_id" ref="model_acc_followup_mail"/>
+            <field name="email_from">${object.alert_by_mail |safe}</field>
+            <field name="email_to">${ctx['email'] |safe}</field>
+            <field name="email_cc">${ctx['email_cc'] |safe}</field>
+            <field name="subject">${object.alert_subject}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    	Dear ${ctx['partner_name']},
+                        <br></br>
+                        <br></br>
+                        ${object.alert_msg |safe}
+                        <br></br>
+                        <br></br>
+                        Please feel free to contact us if you have any questions.
+                    </p>
+                </div>
+            </field>
+            <field name="lang">${object.user_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+            
+            
+    </data>
+</openerp>

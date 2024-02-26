@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record model="res.groups" id="group_multi_location">
+            <field name="name">Multi Locations</field>
+        </record>
+
+        <record model="res.groups" id="product_price_user_group">
+            <field name="name">Allow Product Prices</field>
+        </record>
+
+        <record id="ax_res_users_inherit_form_view1" model="ir.ui.view">
+            <field name="name">Users</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <field name="allowed_journal_ids" position='after'>
+                    <field string="Allowed Locations" name="location_ids" widget="many2many_tags" options="{'no_create': True}" force_save="1"/>                                
+                    <field name="location_company_id" options="{'no_create': True}" domain="[('usage','=','internal')]" force_save="1"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- Record Rule -->
+        <record id="rule_ax_stock_picking" model="ir.rule">
+            <field name="name">Stock Picking multi-location</field>
+            <field name="model_id" ref="model_stock_picking"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('location_id','=',False),('location_id','in',user.location_ids.ids)]</field>
+        </record>
+
+        <!-- Record Rule -->
+        <record id="rule_ax_stock_quant" model="ir.rule">
+            <field name="name">Stock quant multi-location</field>
+            <field name="model_id" ref="model_stock_quant"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('location_id','=',False),('location_id','in',user.location_ids.ids)]</field>
+        </record>
+
+        <!-- Record Rule -->
+        <record id="rule_ax_stock_move" model="ir.rule">
+            <field name="name">Stock move multi-location</field>
+            <field name="model_id" ref="model_stock_move"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|','|',('location_id','=',False),('location_id','in',user.location_ids.ids),('location_dest_id','in',user.location_ids.ids)]</field>
+        </record>
+
+        <!-- Record Rule -->
+        <record id="rule_ax_stock_move_line" model="ir.rule">
+            <field name="name">Stock move line multi-location</field>
+            <field name="model_id" ref="model_stock_move_line"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|','|',('location_id','=',False),('location_id','in',user.location_ids.ids),('location_dest_id','in',user.location_ids.ids)]</field>
+        </record>
+
+        <!-- Record Rule -->
+        <record id="rule_ax_sale_order" model="ir.rule">
+            <field name="name">Sale Order multi-location</field>
+            <field name="model_id" ref="model_sale_order"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('warehouse_location_id','=',False),('warehouse_location_id','in',user.location_ids.ids)]</field>
+        </record>
+
+        <!-- Record Rule -->
+        <record id="rule_ax_purchase_order" model="ir.rule">
+            <field name="name">Purchase Order multi-location</field>
+            <field name="model_id" ref="model_purchase_order"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('warehouse_location_id','=',False),('warehouse_location_id','in',user.location_ids.ids)]</field>
+        </record>
+
+        <!-- Form view -->
+        <record id="acc_picking_form_view" model="ir.ui.view">
+            <field name="name">Stock Picking</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <label for="scheduled_date" position="attributes">
+                    <attribute name="string">Entry Date</attribute>
+                </label>
+                <!-- <label for="scheduled_date" position="after">
+                    <div class="o_td_label" attrs="{'invisible': [('hide_base_fields','=',True)]}">
+                        <label for="scheduled_date" string="GRN Date" attrs="{'invisible': ['|',('hide_base_fields','=',True),('operation_code', '!=','incoming')]}"/>
+                        <label for="scheduled_date" string="Delivery Date" attrs="{'invisible': ['|',('hide_base_fields','=',True),('operation_code', '!=','outgoing')]}"/>
+                        <label for="scheduled_date" string="Transfer Date" attrs="{'invisible': ['|',('hide_base_fields','=',True),('operation_code', '!=','internal')]}"/>
+                    </div>
+                </label> -->
+                <field name="scheduled_date" position="attributes">
+                    <attribute name="widget">date</attribute>
+                </field>
+                <field name="date_deadline" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="date_done" position="attributes">
+                    <attribute name="string">Validated Date</attribute>
+                </field>
+                <field name="date_done" position="attributes">
+                    <attribute name="widget">date</attribute>
+                </field>
+                <field name="origin" position="after">
+                    <!-- <field name="pick_type" invisible='1' force_save='1'/> -->
+                    <field name="is_direct_delivery" invisible='1'/>
+                    <!-- <field name="driver_id" options="{'no_create': True, 'no_create_edit':True}" attrs="{'required':['&amp;','&amp;',('picking_type_code','=','outgoing'),('state','=','assigned'),('is_direct_delivery','=',False)],'readonly':[('state','in',('done','cancel'))],'invisible':[('picking_type_code','!=','outgoing')]}"/> -->
+                    <!-- <field name="pick_datetime" attrs="{'required':['&amp;',('picking_type_code','=','outgoing'),('state','=','assigned')],'readonly':[('state','in',('done','cancel'))],'invisible':[('picking_type_code','!=','outgoing')]}"/> -->
+                    <!-- <field name="backorder_leadtime" attrs="{'required':['&amp;','&amp;',('picking_type_code','=','outgoing'),('state','=','assigned'),('is_direct_delivery','=',False)],'readonly':[('state','in',('done','cancel'))],'invisible':[('picking_type_code','!=','outgoing')]}"/> -->
+                </field>
+                <!-- <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                    <field name="owner_id" groups="stock.group_tracking_owner"/>
+                </xpath> -->
+                <!-- <field name="backorder_id" position="after">
+                    <field name="checked_by" options="{'no_create': True, 'no_create_edit':True}" attrs="{'required':['&amp;',('picking_type_code','=','outgoing'),('state','=','assigned')],'readonly':[('state','in',('done','cancel'))],'invisible':[('picking_type_code','!=','outgoing')]}"/>
+                    <field name="checked_datetime" attrs="{'required':['&amp;',('picking_type_code','=','outgoing'),('state','=','assigned')],'readonly':[('state','in',('done','cancel'))],'invisible':[('picking_type_code','!=','outgoing')]}"/>
+                </field> -->
+                <!-- <xpath expr="//button[@name='button_validate'][1]" position="attributes">
+                    <attribute name="context">{'skip_backorder': True}</attribute>
+                </xpath> -->
+
+                <field name="picking_type_id" position="attributes">
+                    <attribute name="options">{'no_open':True,'no_create':True}</attribute>
+                </field>
+
+                <xpath expr="//field[@name='picking_type_id']" position="after">
+                    <field name="operation_code" invisible="1"/>
+                    <field name="is_return" invisible="1"/>
+                    <field name="picking_code" invisible='1'/>
+                </xpath>
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_open_picking_invoice" type="object"
+                            class="oe_stat_button" icon="fa-file-text"
+                            attrs="{'invisible': ['|',('is_direct_delivery','=',False),('invoice_count','=', 0)]}">
+                        <field name="invoice_count" widget="statinfo"/>
+                    </button>
+                </xpath>
+                <xpath expr="//button[@name='action_toggle_is_locked']" position="after">
+                    <button name="create_invoice" class="oe_highlight"
+                            string="Create Invoice" type="object"
+                            attrs="{'invisible': ['|','|','|','|',('is_direct_delivery','=',False),('invoice_count','!=', 0),('state','!=','done'),('operation_code','=','incoming'),('is_return','=',True)]}"/>
+                    <button name="create_bill" class="oe_highlight"
+                            string="Create Bill" type="object"
+                            attrs="{'invisible': ['|','|','|','|',('is_direct_delivery','=',False),('invoice_count','!=', 0),('state','!=','done'),('operation_code','=','outgoing'),('is_return','=',True)]}"/>
+                    <button name="create_customer_credit" class="oe_highlight"
+                            string="Create Credit Note" type="object"
+                            attrs="{'invisible': ['|','|','|','|',('is_direct_delivery','=',False),('invoice_count','!=', 0),('state','!=','done'),('operation_code','=','outgoing'),('is_return','=',False)]}"/>
+                    <button name="create_vendor_credit" class="oe_highlight"
+                            string="Create Vendor Credit" type="object"
+                            attrs="{'invisible': ['|','|','|','|',('is_direct_delivery','=',False),('invoice_count','!=', 0),('state','!=','done'),('operation_code','=','incoming'),('is_return','=',False)]}"/>
+                </xpath>
+                <field name="origin" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="origin" position="after">
+                    <div class="o_td_label" attrs="{'invisible': [('hide_base_fields','=',True),('operation_code', '=','internal')]}">
+                        <label for="origin" string="Purchase Order No" attrs="{'invisible': ['|',('hide_base_fields','=',True),('operation_code', '!=','incoming')]}"/>
+                        <label for="origin" string="Sale Order No" attrs="{'invisible': ['|',('hide_base_fields','=',True),('operation_code', '!=','outgoing')]}"/>
+                    </div>
+                    <div class='o_row' attrs="{'invisible': ['|',('hide_base_fields','=',True),('operation_code', '=','internal')]}">
+                        <field name="origin" attrs="{'readonly': [('state', 'in', ['cancel', 'done'])]}"/>
+                    </div>
+                </field>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="attributes">
+                    <attribute name="width">1.0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='description_picking']" position="attributes">
+                    <attribute name="width">3.0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="width">1.0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='reserved_availability']" position="attributes">
+                    <attribute name="width">1.0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='forecast_availability']" position="attributes">
+                    <attribute name="width">1.0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='quantity_done']" position="attributes">
+                    <attribute name="width">1.0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom']" position="attributes">
+                    <attribute name="width">0.5</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom']" position="attributes">
+                    <attribute name="string">UoM</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="acc_product_product_inherit2" model="ir.ui.view">
+            <field name="name">Product Template</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+                <field name="standard_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+                <field name="list_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+               <label for="list_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </label>
+                <label for="standard_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </label>
+                <field name="uom_name" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+                <xpath expr="//div[@name='standard_price_uom']" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </xpath>
+
+                <field name="sale_percent" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+                <label for="sale_percent" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </label>
+                <xpath expr="//div[@name='sale_percent']" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </xpath>
+
+                <field name="min_margin" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+                <label for="min_margin" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </label>
+                <xpath expr="//div[@name='min_marin']" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="acc_product_template_inherit2_kanban_view" model="ir.ui.view">
+            <field name="name">Product.template.product.kanban</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='product_lst_price']" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="acc_product_product_inherit2_tree_view" model="ir.ui.view">
+            <field name="name">Product Template</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="standard_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+                <field name="list_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+            </field>
+        </record>
+
+         <record id="acc_product_variant_inherit2" model="ir.ui.view">
+            <field name="name">Product Product</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <field name="standard_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+                <field name="lst_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+                <label for="lst_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </label>
+                <label for="standard_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </label>
+            </field>
+        </record>
+
+        <record id="acc_product_variant_inherit2_tree_view" model="ir.ui.view">
+            <field name="name">Product Product</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="standard_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+                <field name="lst_price" position="attributes">
+                    <attribute name="groups">acc_stock.product_price_user_group</attribute>
+                </field>
+            </field>
+        </record>
+
+        <!-- Sale Stock view -->
+        <!-- <record id="acc_sale_stock_form_view" model="ir.ui.view">
+            <field name="name">Sales Order</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="has_available_route_ids" invisible='1'/>
+                </field>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
+                    <field name="route_id" options="{'no_create': True}"/>
+                </xpath>
+            </field>
+        </record> -->
+
+        <record id="pos_sale_order_form_view_inherit" model="ir.ui.view">
+            <field name="name">Sale Order</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='warehouse_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="warehouse_id"/>
+                    <field name="warehouse_location_id" attrs="{'readonly': [('state', 'not in', ('draft','sent'))]}"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
+                    <field name="onhand_qty" force_save="1" readonly="1"/>
+                </xpath>
+                <field name="partner_id" position="attributes">
+                    <attribute name="domain">[('customer_rank','&gt;',0),('is_company','=',True)]</attribute>
+                </field>
+                <field name="partner_id" position="attributes">
+                    <attribute name="options">{'no_create':True}</attribute>
+                </field>
+            </field>
+        </record>
+
+        <record id="acc_view_stock_move_operations" model="ir.ui.view">
+            <field name="name">Stock Move</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_stock_move_operations"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <label for='tracking'/>
+                    <div>
+                        <field name='tracking' style="color:red"/>
+                    </div>
+                </field>
+                <field name="next_serial" position="after">
+                    <field name="enable_auto_lot" invisible='1' force_save='1'/>
+                    <field name="show_lots_text" invisible='1' force_save='1'/>
+                    <label for="next_serial_count" string="Number of Qty" attrs="{'invisible': ['|',('enable_auto_lot','=',False),('display_assign_serial', '=', True)]}"/>
+                        <div class="o_row" attrs="{'invisible': ['|',('enable_auto_lot','=',False),('display_assign_serial', '=', True)]}">
+                            <span><field name="next_serial_count" attrs="{'readonly': ['|', ('state', '=', 'cancel'), '&amp;', ('state', '=', 'done'), ('is_locked', '=', True)]}"/><!--   <field name="expiration_date" placeholder="Expiry Date" style="width:70% !important" attrs="{'readonly': ['|', ('state', '=', 'cancel'), '&amp;', ('state', '=', 'done'), ('is_locked', '=', True)]}"/> --></span>
+                            <button name="action_update_move_quantity" type="object"
+                                    class="btn-link"
+                                    title="Update Quantity" attrs="{'invisible': ['|', ('state', '=', 'cancel'), '&amp;', ('state', '=', 'done'), ('is_locked', '=', True)]}">
+                                <span>Update Quantity</span>
+                            </button>
+                            <button name="action_clear_lines_show_details" type="object"
+                                    class="btn-link"
+                                    title="Clear Lines"
+                                    attrs="{'invisible': ['|', ('state', '=', 'cancel'), '&amp;', ('state', '=', 'done'), ('is_locked', '=', True)]}">
+                                <span>Clear All</span>
+                            </button>
+                        </div>
+                </field>
+            </field>
+        </record>
+
+        <!-- <record id="acc_view_stock_move_line_operation_tree" model="ir.ui.view">
+            <field name="name">Stock Move Line</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+            <field name="arch" type="xml">
+                <field name="lot_name" position="replace">
+                    <field name="lot_name" widget="text" groups="stock.group_production_lot"
+                        placeholder="Write your SN/LN one by one or copy paste a list."
+                        attrs="{'readonly': ['&amp;', ('package_level_id', '!=', False), ('parent.picking_type_entire_packs', '=', True)],'column_invisible':[('parent.show_lots_text', '=', False)]}"/>
+                </field>
+            </field>
+        </record> -->
+
+        <record id="acc_view_stock_move_line_detailed_operation_tree" model="ir.ui.view">
+            <field name="name">Stock Move Line</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+            <field name="arch" type="xml">
+                <field name="lot_id" position="after">
+                    <field name="enable_auto_lot" invisible='1'/>
+                    <field name="serial_no" groups="stock.group_production_lot" attrs="{'invisible':[('enable_auto_lot','=',False)],'column_invisible':[('parent.has_tracking','=',False)]}"/>
+                </field>
+                <field name="lot_id" position="attributes">
+                    <attribute name="domain">[('product_id','=',product_id),('qty_available','>',0),('company_id','=',company_id)]</attribute>
+                </field>
+            </field>
+        </record>
+
+        <!-- Delivery Alert Email -->
+        <record id="acc_delivery_aler_scheduler" model="ir.cron">
+            <field name="name">Delivery Alert Scheduler</field>
+            <field name="model_id" ref="model_stock_picking"/>
+            <field name="state">code</field>
+            <field name="code">model._entry_delivery_alert()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+        <record id="action_picking_delivery_only" model="ir.actions.act_window">
+            <field name="name">Delivery Orders</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain">[('picking_type_code','=','outgoing'),('is_consignment','!=',True),('is_direct_delivery','=',False)]</field>
+            <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0],'default_picking_code':'outgoing','search_default_waiting': 1,'search_default_available': 1}</field>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No Delivery found. Let's create one!
+                </p><p>
+                    Delivery allow you to move products from our location to customer location.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_picking_direct_delivery_only" model="ir.actions.act_window">
+            <field name="name">Direct Delivery Orders</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain">[('picking_type_code','=','outgoing'),('is_consignment','!=',True),('is_direct_delivery','=',True)]</field>
+            <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0],'default_picking_code':'outgoing','default_is_direct_delivery':True}</field>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No Delivery found. Let's create one!
+                </p><p>
+                    Delivery allow you to move products from our location to customer location.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_picking_delivery_driver_only" model="ir.actions.act_window">
+            <field name="name">Delivery Orders</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain">[('picking_type_code','=','outgoing'),('is_consignment','!=',True),('is_direct_delivery','=',False)]</field>
+            <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0],'default_picking_code':'outgoing','search_default_waiting': 1,'search_default_available': 1,'create':False,'delete':False}</field>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No Delivery found. Let's create one!
+                </p><p>
+                    Delivery allow you to move products from our location to customer location.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_picking_direct_delivery_driver_only" model="ir.actions.act_window">
+            <field name="name">Direct Delivery Orders</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain">[('picking_type_code','=','outgoing'),('is_consignment','!=',True),('is_direct_delivery','=',True)]</field>
+            <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0],'default_picking_code':'outgoing','default_is_direct_delivery':True,'create':False,'delete':False}</field>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No Delivery found. Let's create one!
+                </p><p>
+                    Delivery allow you to move products from our location to customer location.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_picking_grn_only" model="ir.actions.act_window">
+            <field name="name">GRN</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain">[('picking_type_code','=','incoming'),('is_consignment','!=',True)]</field>
+            <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0],'default_picking_code':'incoming'}</field>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No GRN found. Let's create one!
+                </p><p>
+                    GRN allow you to move products from vendor location to our location.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_picking_internal_only" model="ir.actions.act_window">
+            <field name="name">Internal Transfer</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain">[('picking_type_code','=','internal'),('is_consignment','!=',True)]</field>
+            <field name="context">{'contact_display': 'partner_address', 'default_company_id': allowed_company_ids[0],'default_picking_code':'internal'}</field>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No Internal Transfer found. Let's create one!
+                </p><p>
+                    Internal Transfer allow you to move products from one location to another location within our company.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="stock.all_picking" name="Transfers" parent="stock.menu_stock_warehouse_mgmt" sequence="5" action="stock.action_picking_tree_all" groups="stock.group_stock_manager,stock.group_stock_user" active='false'/>
+
+        <menuitem id="pm_action_picking_delivery_only" name="Delivery Orders" parent="stock.menu_stock_warehouse_mgmt" sequence="1" action="action_picking_delivery_only" groups="stock.group_stock_manager,stock.group_stock_user"/>
+        
+        <menuitem id="pm_action_picking_direct_delivery_only" name="Direct Delivery Orders" parent="stock.menu_stock_warehouse_mgmt" sequence="2" action="action_picking_direct_delivery_only" groups="stock.group_stock_manager,stock.group_stock_user"/>
+
+        <menuitem id="pm_action_picking_grn_only" name="GRN" parent="stock.menu_stock_warehouse_mgmt" sequence="3" action="action_picking_grn_only" groups="stock.group_stock_manager,stock.group_stock_user"/>
+
+        <menuitem id="pm_action_picking_internal_only" name="Internal Transfer" parent="stock.menu_stock_warehouse_mgmt" sequence="4" action="action_picking_internal_only" groups="stock.group_stock_manager,stock.group_stock_user"/>
+
+        <!-- Invoice -->
+        <record id="account_move_form_view_inherited" model="ir.ui.view">
+            <field name="name">account.move.form.view.inherited</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='ref']" position="after">
+                    <field name="picking_id" invisible='1' force_save='1'/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="stock_quant_tree_view_inherit_pos" model="ir.ui.view">
+            <field name="name">stock.quant</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_tree_editable"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="product_barcode" readonly='1' force_save='1'/>
+                    <field name="product_pos_categ_id" readonly='1' force_save='1'/>
+                    <field name="standard_price" readonly='1' force_save='1' optional="hide"/>
+                    <field name="list_price" readonly='1' force_save='1' optional="hide"/>
+                    <field name="usd_currency_id" invisible="1"/>
+                    <field name="rp_aed" readonly='1' force_save='1' optional="hide"/>
+                    <field name="rp_usd" readonly='1' force_save='1' optional="hide"/>
+                    <field name="uc_usd" readonly='1' force_save='1' optional="hide"/> 
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Purchase Order Form view -->
+        <record id="pos_purchase_order_form_view_inherit" model="ir.ui.view">
+            <field name="name">Purchase Order</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="attributes">
+                    <attribute name="options">{'no_create':True}</attribute>
+                </field>
+                <field name="partner_id" position="attributes">
+                    <attribute name="domain">[('supplier_rank','&gt;',0),('is_company','=',True)]</attribute>
+                </field>
+                <xpath expr="//field[@name='picking_type_id']" position="replace">
+                </xpath>
+                <xpath expr="//field[@name='partner_ref']" position="after">
+                    <field name="picking_type_id" domain="[('code','=','incoming'), '|', ('warehouse_id', '=', False), ('warehouse_id.company_id', '=', company_id)]" options="{'no_create': True}" groups="stock.group_stock_multi_locations"/>
+                    <field name="warehouse_location_id" attrs="{'readonly': [('state', 'not in', ('draft','sent'))]}"/>
+                </xpath>
+            </field>
+        </record>
+
+      <!-- POS Record Rules -->
+      <record id="rule_ax_pos_config" model="ir.rule">
+            <field name="name">Pos config multi-location</field>
+            <field name="model_id" ref="point_of_sale.model_pos_config"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('location_id','=',False),('location_id','in',user.location_ids.ids)]</field>
+        </record>
+
+    <!-- POS Order Form view -->
+        <record id="pos_order_form_view_inherit1_location" model="ir.ui.view">
+            <field name="name">POS Order</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_order']" position="after">
+                    <field name="location_id" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+    <record id="rule_ax_pos_order" model="ir.rule">
+            <field name="name">Pos order multi-location</field>
+            <field name="model_id" ref="point_of_sale.model_pos_order"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('location_id','=',False),('location_id','in',user.location_ids.ids)]</field>
+        </record>
+
+    <!-- POS Session Form view -->
+        <record id="pos_session_form_view_inherit1_location" model="ir.ui.view">
+            <field name="name">POS Session</field>
+            <field name="model">pos.session</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='user_id']" position="after">
+                    <field name="location_id" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+    <record id="rule_ax_pos_session" model="ir.rule">
+            <field name="name">Pos session multi-location</field>
+            <field name="model_id" ref="point_of_sale.model_pos_session"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('location_id','=',False),('location_id','in',user.location_ids.ids)]</field>
+        </record>
+
+    <!-- POS Payment Form view -->
+        <record id="pos_payment_form_view_inherit1_location" model="ir.ui.view">
+            <field name="name">POS Payment</field>
+            <field name="model">pos.payment</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='pos_order_id']" position="after">
+                    <field name="location_id" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+    <record id="rule_ax_pos_payment" model="ir.rule">
+            <field name="name">Pos payment multi-location</field>
+            <field name="model_id" ref="point_of_sale.model_pos_payment"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('location_id','=',False),('location_id','in',user.location_ids.ids)]</field>
+        </record>
+
+    <!-- Product Price Updation -->
+        <record id="ax_stock_price_updation_scheduler" model="ir.cron">
+            <field name="name">Axsgo Product Price Scheduler</field>
+            <field name="model_id" ref="model_stock_quant"/>
+            <field name="state">code</field>
+            <field name="code">model._update_stock_price()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+    </data>
+</openerp>

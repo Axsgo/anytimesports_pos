@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_frontend" inherit_id="web.assets_frontend">
+        <xpath expr="//link[last()]" position="after">
+            <link rel="stylesheet" type="text/css" href="/theme_home/static/src/css/bootstrap.min.css"/>
+            <link rel="stylesheet" type="text/css" href="/theme_home/static/src/css/flex-slider.css"/>
+            <link rel="stylesheet" type="text/css" href="/theme_home/static/src/css/font-awesome.css"/>
+            <link rel="stylesheet" type="text/css" href="/theme_home/static/src/css/lightbox.css"/>
+            <link rel="stylesheet" type="text/scss" href="/theme_home/static/src/css/owl-carousel.css"/>
+            <link rel="stylesheet" type="text/css" href="/theme_home/static/src/css/templatemo-hexashop.css"/>
+            <link rel="stylesheet" type="text/css" href="/theme_home/static/src/css/style.css"/>
+            <link rel="stylesheet" type="text/css" href="/theme_home/static/src/css/snippets_style.css"/>
+<!--            <link rel="stylesheet" type="text/css" href="/theme_home/static/src/scss/customstyle.scss"/>-->
+            <script type="text/javascript" src="/theme_home/static/src/js/owl-carousel.js"/>
+            <script type="text/javascript" src="/theme_home/static/src/js/scrollreveal.min.js"/>
+            <script type="text/javascript" src="/theme_home/static/src/js/custom.js"/>
+            <script type="text/javascript" src="/theme_home/static/src/js/quantity.js"/>
+
+        </xpath>
+    </template>
+</odoo>

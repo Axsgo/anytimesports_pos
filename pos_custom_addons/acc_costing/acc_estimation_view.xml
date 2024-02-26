@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<!-- Form view -->
+        <record id="acc_estimation_form_view" model="ir.ui.view">
+            <field name="name">Costing Estimation</field>
+            <field name="model">acc.estimation</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+				<form string="Costing Estimation">
+					<sheet>
+						<group>
+							<group>
+								<field name="type" options="{'horizontal':True}" widget="radio"/>
+								<field name="partner_id" options="{'no_open':True,'no_create':True}" domain="[('supplier_rank','&gt;','0'),('is_company','=',True),'|',('company_id','=',False),('company_id','=',company_id)]"/>
+								<field name="po_ids" options="{'no_open':True,'no_create':True}" widget="many2many_tags" domain="[('state','=','purchase'),('partner_id','=',partner_id)]" attrs="{'invisible':[('type','!=','from_po')]}"/>
+								<label for="currency_id"/>
+								<div class='o_row'>
+									<field name="currency_id" options="{'no_open':True,'no_create':True}"/><span> <b>Currency Rate - </b></span><field name="currency_rate"/>
+								</div>
+								<field name="landed_cost_factor" style="color:red"/>
+								<field name="company_currency_id" invisible='1'/>
+								<field name="company_id" options="{'no_open':True,'no_create':True}"/>
+							</group>
+							<group>
+								<field name="entry_date"/>
+								<field name="landed_partner_id" options="{'no_open':True,'no_create':True}" domain="[('supplier_rank','&gt;','0'),('is_company','=',True),'|',('company_id','=',False),('company_id','=',company_id)]"/>
+							</group>
+						</group>
+						<button string="Update PO Details" type="object" name="update_po_details" class='oe_highlight' attrs="{'invisible':[('type','!=','from_po')]}"/>
+						<notebook>
+							<page string="Vendor Bills">
+								<field name="bill_ids">
+									<tree editable="bottom">
+										<field name="product_id"/>
+										<field name="name"/>
+										<field name="product_qty"/>
+										<field name="product_uom"/>
+										<field name="price_unit"/>
+										<!-- <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase'),('company_id','=',parent.company_id)]"/> -->
+										<field name="price_subtotal"/>
+									</tree>
+								</field>
+								<group class="oe_subtotal_footer oe_right">
+	                                <field name="vendor_amount_untaxed" widget="monetary"/>
+	                                <!-- <field name="vendor_amount_tax" widget="monetary"/> -->
+	                                <div class="oe_subtotal_footer_separator oe_inline">
+	                                    <label for="vendor_amount_total"/>
+	                                </div>
+	                                <field name="vendor_amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary"/>
+	                            </group>
+							</page>
+						</notebook>
+						<notebook>
+							<page string="Clearance Bills">
+								<field name="clearance_bill_ids">
+									<tree editable="bottom">
+										<field name="product_id" string="Charges" domain="[('type','=','service')]"/>
+										<field name="name"/>
+										<field name="product_qty"/>
+										<field name="product_uom"/>
+										<field name="price_unit"/>
+										<!-- <field name="taxes_id" widget="many2many_tags" domain="[('type_tax_use','=','purchase'),('company_id','=',parent.company_id)]"/> -->
+										<field name="price_subtotal"/>
+									</tree>
+								</field>
+								<group class="oe_subtotal_footer oe_right">
+	                                <field name="landed_amount_untaxed" widget="monetary" options="{'currency_field':'company_currency_id'}"/>
+	                                <!-- <field name="landed_amount_tax" widget="monetary"/> -->
+	                                <div class="oe_subtotal_footer_separator oe_inline">
+	                                    <label for="landed_amount_total"/>
+	                                </div>
+	                                <field name="landed_amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field':'company_currency_id'}"/>
+	                            </group>
+							</page>
+						</notebook>
+						<button name="compute_estimation" string="Compute Estimation" type='object' class="oe_highlight"/>
+						<notebook>
+							<page string="Estimation">
+								<field name="product_estimation_ids" readonly='1' force_save='1'>
+									<tree>
+										<field name="product_id" width='2'/>
+										<field name="std_price" width='1'/>
+										<field name="estimated_price" width='1'/>
+										<field name="list_price" width='1'/>
+										<field name="estimated_list_price" width='1'/>
+										<field name="currency_id" width='1'/>
+									</tree>
+								</field>
+							</page>
+						</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+		<record id="action_acc_estimation" model="ir.actions.act_window">
+			<field name="name">Costing Estimation</field>
+			<field name="res_model">acc.estimation</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="view_mode">form</field>
+			<field name="view_id" ref="acc_estimation_form_view"/>
+			<field name="target">current</field>
+		</record>
+
+	    <!--  <menuitem
+	            id="tpm_acc_estimation"
+	            name="Costing Estimation Report"
+	            action="action_acc_estimation"
+	            parent="stock.menu_warehouse_report"
+	            sequence="0"/> -->
+	</data>
+</openerp>

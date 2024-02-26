@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<!-- Form view -->
+        <record id="ax_shipment_master_form_view" model="ir.ui.view">
+            <field name="name">Shipment</field>
+            <field name="model">ax.shipment.master</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+				<form string="Shipment">
+					<header>
+						<button name="entry_approve" string="Approve" states='draft' type='object' class='oe_highlight' groups="acc_users.approver_user_group"/>
+						<button name="entry_draft" string="Set to Draft" type='object' attrs="{'invisible':[('is_costing_done','=',True)]}"/>
+						<button name="entry_cancel" string="Cancel" type='object' states='draft'/>
+						<button name="entry_get_report" string="Download Costing Report" attrs="{'invisible':['|',('is_costing_done','=',False),('costing_report_pdf','!=',False)]}" type='object' class='oe_highlight'/>
+						<field name="state" widget="statusbar"/>
+					</header>
+					<sheet>
+						<div class="oe_button_box" name="button_box">
+							<field name="picking_state" invisible='1'/>
+							<field name="po_state" invisible='1'/>
+							<field name="bill_state" invisible='1'/>
+							<field name="clearance_bill_state" invisible='1'/>
+							<field name="costing_state" invisible='1'/>
+
+	                        <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':['|', '|',('picking_count', '=', 0),('id','=',False),('picking_state','=','close')]}" id="open_grn_button">
+	                            <field name="picking_count" widget="statinfo" string="GRN/Receipts"/>
+	                        </button>
+	                        <button type="object" name="action_view_picking" class="oe_stat_button oe_highlight" icon="fa-truck" attrs="{'invisible':['|', '|',('picking_count', '=', 0),('id','=',False),('picking_state','=','open')]}" id="close_grn_button">
+	                            <field name="picking_count" widget="statinfo" string="GRN/Receipts"/>
+	                        </button>
+
+	                        <button type="object" name="action_view_po" class="oe_stat_button" icon="fa-shopping-cart" attrs="{'invisible':['|', '|',('po_count', '=', 0),('state','!=','approved'),('po_state','=','close')]}" id="open_po_button">
+	                            <field name="po_count" widget="statinfo" string="Supplier Bill Creation"/>
+	                        </button>
+	                        <button type="object" name="action_view_po" class="oe_stat_button oe_highlight" icon="fa-shopping-cart" attrs="{'invisible':['|', '|',('po_count', '=', 0),('state','!=','approved'),('po_state','=','open')]}" d="close_po_button">
+	                            <field name="po_count" widget="statinfo" string="Supplier Bill Creation"/>
+	                        </button>
+
+	                        <button type="object" name="action_view_invoice" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible':['|', '|',('bill_count', '=', 0),('state','!=','approved'),('bill_state','=','close')]}" id="open_bill_button">
+	                            <field name="bill_count" widget="statinfo" string="Supplier Bills"/>
+	                        </button>
+	                        <button type="object" name="action_view_invoice" class="oe_stat_button oe_highlight" icon="fa-pencil-square-o" attrs="{'invisible':['|', '|',('bill_count', '=', 0),('state','!=','approved'),('bill_state','=','open')]}" id="close_bill_button">
+	                            <field name="bill_count" widget="statinfo" string="Supplier Bills"/>
+	                        </button>
+
+	                        <button type="object" name="action_view_costing_bill" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible':['|', '|',('costing_bill_count', '=', 0),('state','!=','approved'),('clearance_bill_state','=','close')]}" id="open_clearance_bill_button">
+	                            <field name="costing_bill_count" widget="statinfo" string="Clearance Bills"/>
+	                        </button>
+	                        <button type="object" name="action_view_costing_bill" class="oe_stat_button oe_highlight" icon="fa-pencil-square-o" attrs="{'invisible':['|', '|',('costing_bill_count', '=', 0),('state','!=','approved'),('clearance_bill_state','=','open')]}" id="close_clearance_bill_button">
+	                            <field name="costing_bill_count" widget="statinfo" string="Clearance Bills"/>
+	                        </button>
+
+	                        <button type="object" name="action_view_landed_cost" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible':['|','|',('is_show_landed_cost','=',False),('state','!=','approved'),('costing_state','=','close')]}" id="open_costing_button">
+	                            <field name="landed_cost_count" widget="statinfo" string="Landed Costing"/>
+	                            <field name='is_show_landed_cost' invisible='1'/>
+	                        </button>
+	                        <button type="object" name="action_view_landed_cost" class="oe_stat_button oe_highlight" icon="fa-pencil-square-o" attrs="{'invisible':['|','|',('is_show_landed_cost','=',False),('state','!=','approved'),('costing_state','=','open')]}" id="close_costing_button">
+	                            <field name="landed_cost_count" widget="statinfo" string="Landed Costing"/>
+	                        </button>
+	                    </div>
+	                    <div class="oe_title">
+	                    	<label for="name" string="Shipment No." class="oe_edit_only"/>
+	                        <h1>
+	                            <field name="name" readonly="1"/>
+	                        </h1>
+	                    </div>
+						<group>    
+							<group>
+								<field name="partner_ids" required="1" force_save='1' attrs="{'readonly':[('state','!=','draft')]}" domain="[('supplier_rank','&gt;',0),('is_company','=',True)]" options="{'no_open':True, 'no_create':True}" widget="many2many_tags"/>
+								<field name='po_ids' required='1' attrs="{'readonly':[('state','!=','draft')]}" domain="[('partner_id','in',partner_ids),('is_shipment_done','=',False)]" options="{'no_open':True,'no_create':True}" widget="many2many_tags"/>
+								<field name="po_grn" widget="many2many_tags" invisible='1'/>
+								<field name="po_bills" widget="many2many_tags" invisible='1'/>
+								<field name="po_grn_ids" required='0' attrs="{'readonly':[('state','!=','draft')]}" options="{'no_open':True,'no_create':True}" domain="[('id','in',po_grn),('state','=','done')]" widget="many2many_tags"/>
+								<field name="po_bill_ids" required='0' attrs="{'readonly':[('state','!=','draft')]}" options="{'no_open':True,'no_create':True}" domain="[('id','in',po_bills),('state','=','posted')]" widget="many2many_tags"/>
+								<field name="description" attrs="{'readonly':[('state','!=','draft')]}" force_save='1'/>
+								<field name="shipment_type" required='1' widget='radio' options="{'horizontal':True}" attrs="{'readonly':[('state','=','approved')]}"/>
+							</group>
+							<group>
+								<field name="date" attrs="{'readonly':[('state','=','approved')]}"/>
+								<field name="landed_partner_id" widget="many2many_tags" required="1" force_save='1' attrs="{'readonly':[('state','!=','draft')]}" domain="[('supplier_rank','&gt;',0),('is_company','=',True)]" options="{'no_open':True, 'no_create':True}"/>
+								<field name="attachment_ids" attrs="{'readonly':[('state','!=','draft')]}" widget="many2many_binary" string="Attach files"/> 
+								<!-- <field name="product_ids" widget="many2many_tags" invisible='1'/> -->
+								<field name="picking_ids" widget="many2many_tags" invisible='1'/>
+								<field name="bill_ids" widget="many2many_tags" invisible='1'/>
+								<field name="is_costing_done" invisible='1' force_save='1'/>
+								<field name="cost_bill_ids" widget="many2many_tags" invisible='0' force_save='1'/>
+							</group>
+						</group>
+						<group string="Pallet Details">
+							<group>
+								<field name="dimensions" attrs="{'invisible':[('shipment_type','!=','lcl')],'readonly':[('state','!=','draft')]}"/>
+								<field name="pallet_type" attrs="{'required':[('shipment_type','=','fcl')],'invisible':[('shipment_type','!=','fcl')],'readonly':[('state','!=','draft')]}"/>
+								<field name="gross_weight" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="net_weight" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+							</group>
+							<group>
+								<field name="pallet_count" attrs="{'required':[('shipment_type','=','lcl')],'invisible':[('shipment_type','!=','lcl')],'readonly':[('state','!=','draft')]}"/>
+								<field name="notes" attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="costing_attach_id" readonly='1' force_save='1' invisible='1'/>
+								<field name="costing_report_pdf" readonly='1' force_save='1' attrs="{'invisible':[('is_costing_done','=',False)]}" filename='costing_report_filename'/>
+                    			<field name="costing_report_filename" invisible='1'/>
+								<field name="company_id" required='1' attrs="{'readonly':[('state','!=','draft')]}" groups="base.group_multi_company"/>
+							</group>
+						</group>
+						<group string="Estimation">
+							<group>
+								<field name="vendor_amount_total"/>
+								<field name="landed_amount_total"/>
+								<field name="landed_cost_factor"/>
+							</group>
+							<group>
+								<button name="compute_estimation" string="Compute Estimation" type='object' class='oe_highlight' attrs="{'invisible':[('is_costing_done','=',True)]}"/>
+							</group>
+							<field name="estimation_ids" readonly='1' attrs="{'invisible':['|',('po_ids','=',False),('cost_bill_ids','=',False)]}">
+								<tree>
+									<field name="product_id" width='2'/>
+									<field name="std_price" width='1'/>
+									<field name="estimated_price" width='1'/>
+									<field name="list_price" width='1'/>
+									<field name="estimated_list_price" width='1'/>
+									<field name="currency_id" width='1'/>
+								</tree>
+							</field>
+						</group>
+						<notebook>
+							<page string="Status">
+								<group>
+									<group>
+										<field name="picking_state" widget='badge' decoration-success="picking_state=='close'" decoration-danger="picking_state=='open'" style='font-weight:bold'/>
+										<field name="bill_state" widget='badge' decoration-success="bill_state=='close'" decoration-danger="bill_state=='open'" style='font-weight:bold'/>
+										<field name="clearance_bill_state" widget='badge' decoration-success="clearance_bill_state=='close'" decoration-danger="clearance_bill_state=='open'" style='font-weight:bold'/>
+										<field name="costing_state" widget='badge' decoration-success="costing_state=='close'" decoration-danger="costing_state=='open'" style='font-weight:bold'/>
+									</group>
+								</group>
+							</page>
+							<page string = "Entry Info">
+								<group>
+									<group>
+										<field name = "user_id"/>
+										<field name = "update_user_id"/>
+										<field name = "ap_rej_user_id"  attrs = "{'invisible':[('state','!=','approved')]}"/>
+										<field name = "cancel_user_id"  attrs = "{'invisible':[('state','!=','cancel')]}"/>
+									</group>
+									<group>
+										<field name = "crt_date"/>
+										<field name = "update_date"/>
+										<field name = "ap_rej_date"  attrs = "{'invisible':[('state','!=','approved')]}"/>
+										<field name = "cancel_date"  attrs = "{'invisible':[('state','!=','cancel')]}"/>
+									</group>
+								</group>
+							</page>		
+						</notebook>
+					</sheet>
+					<div class="oe_chatter">
+		               <field name="message_follower_ids" widget="mail_followers"/>
+		               <field name="activity_ids" widget="mail_activity"/>
+		               <field name="message_ids" widget="mail_thread"/>
+		           </div>
+				</form>
+            </field>
+        </record>
+        <!-- Tree View -->
+        <record id="ax_shipment_master_tree_view" model="ir.ui.view">
+            <field name="name">Shipment</field>
+            <field name="model">ax.shipment.master</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+             <tree string="Shipment"> 
+				<field name="name" decoration-bf='1'/>
+				<field name='date'/>
+				<field name="partner_name"/>
+				<field name="po_name" decoration-bf='1'/>
+				<field name="landed_partner_name"/>
+				<field name="state" widget="badge" decoration-success="state=='approved'" decoration-danger="state=='cancel'"/>  	
+				<field name="shipment_state" widget="badge"	decoration-success="shipment_state=='done'"/> 
+				<field name="status" invisible='1'/>
+				<field name="progress_bar" widget="progressbar" width='0.2' decoration-bf='1'/>
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search View Start -->
+	
+	<record id="ax_shipment_master_search_view" model="ir.ui.view">
+		<field name="name">Shipment</field>
+		<field name="model">ax.shipment.master</field>
+		<field name="arch" type="xml">
+			<search string="Shipment">
+				<field name="name" string="Name"  filter_domain="[('name','ilike',self)]" />
+				<field name="partner_ids" string="Vendor"  filter_domain="[('partner_ids','ilike',self)]" />
+				<field name="po_ids" string="Purchase Order"  filter_domain="[('po_ids','ilike',self)]" />
+				<field name="landed_partner_id" string="Clearance Vendor"  filter_domain="[('landed_partner_id','ilike',self)]" />
+				<filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+				<filter name="approved" string="Approved" domain="[('state','=','approved')]"/>		
+				<filter name="cancel" string="Cancelled" domain="[('state','=','cancel')]"/>		
+				<separator/>
+				<filter name="grn" string="GRN In Progress" domain="[('status','=','grn'),('state','!=','cancel')]"/>
+				<filter name="bill" string="Supplier Bill In Progress" domain="[('status','=','bill'),('state','!=','cancel')]"/>
+				<filter name="clearance_bill" string="Clearance Bill In Progress" domain="[('status','=','clearance_bill'),('state','!=','cancel')]"/>
+				<filter name="landed_costing" string="Landed Costing In Progress" domain="[('status','=','landed_costing'),('state','!=','cancel')]"/>
+				<separator/>
+				<filter name="done" string="Fully Completed" domain="[('status','=','done'),('state','!=','cancel')]"/>
+				<filter name="not_done" string="In Progress" domain="[('status','!=','done'),('state','!=','cancel')]"/>
+				<group expand="0" string="Group By...">
+					<filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+					<filter string="Shipment State" name="shipment_state" domain="[]" context="{'group_by':'status'}"/>
+				</group>
+			</search>
+		</field>
+	</record>
+	
+	<!-- Search View End -->
+
+
+
+        <record id="action_ax_shipment_master" model="ir.actions.act_window">  
+            <field name="name">Shipment</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ax.shipment.master</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="ax_shipment_master_tree_view"></field>
+            <field name="search_view_id" ref="ax_shipment_master_search_view"/>
+            <field name="context">{'search_default_not_done':True}</field>
+        </record>
+            
+        <menuitem
+            id="tpm_ax_shipment_master"
+            name="Shipment No"
+            action="action_ax_shipment_master"
+            parent="stock.menu_stock_warehouse_mgmt"
+            sequence="114"/>
+
+        <!-- Shipment No sequence no -->
+        <record id="sequence_ax_shipment_master" model="ir.sequence">
+            <field name="name">Shipment Master Sequence</field>
+            <field name="code">ax.shipment.master</field>
+            <field name="prefix">SN</field>
+            <field name="padding">5</field>
+            <field name="implementation">no_gap</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</openerp>

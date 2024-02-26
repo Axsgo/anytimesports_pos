@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="s_testimonial" name="Testimonial snippet">
+        <section class="s_testimonial">
+            <div class="container">
+                <div class="row">
+
+                    <div class="col-md-8 col-sm-12 bg-port-red big-box">
+                        <div class="portfolio-content-items">
+                            <div class="port-title-img">
+                                <img src="https://www.galaxyweblinks.com/new_theme/assets/images/portfolio/staples_logo_white.svg"
+                                     alt="staples logo"/>
+                            </div>
+                            <div class="port-img-box">
+                                <img src="https://www.galaxyweblinks.com/new_theme/assets/images/portfolio/mockup_staples.png"
+                                     alt="mockup staples"/>
+                            </div>
+                            <div class="port-name-box">
+                                <h2>Design assistance saves the day</h2>
+                                <p class="more-btn">View Project
+                                    <img src="https://www.galaxyweblinks.com/new_theme/assets/images/svg/arrow-sm-right-white.svg"
+                                         alt=""/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
+                        <div class="col-sm-6  col-md-12 portfolio-content-items small-box bg-port-light-green">
+                            <a href="https://www.galaxyweblinks.com/portfolio/arlo/" title="Arlo Case Study"
+                               class="arlo">
+                                <div class="portfolio-contents">
+                                    <img class="imgmheight50"
+                                         src="https://www.galaxyweblinks.com/new_theme/assets/images/portfolio/logo-arlo.svg"
+                                         alt="logo arlo"/>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="col-sm-6  col-md-12 portfolio-content-items small-box light-shadow bg-port-royalblue">
+                            <a href="https://www.galaxyweblinks.com/portfolio/blumtelehealth"
+                               title="Blum Case Study" class="blum">
+                                <div class="portfolio-contents">
+                                    <img src="https://www.galaxyweblinks.com/new_theme/assets/images/portfolio/logo_blum.svg"
+                                         alt="logo cmm"/>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+    <template id="place_into_bar" inherit_id="website.snippets" name="Place into bar">
+        <xpath expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]" position="inside">
+            <t t-snippet="theme_home.s_testimonial"
+               t-thumbnail="/theme_home/static/src/snippets/img/s_images_wall.svg"/>
+        </xpath>
+    </template>
+</odoo>

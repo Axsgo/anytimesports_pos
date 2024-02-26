@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="income_statement_report_view" model="ir.ui.view">
+		<field name="name">income.statement.report</field>
+		<field name="model">income.statement.report</field>
+		<field name="arch" type="xml">
+			<form>
+				<group>
+					<group>
+						<field name="from_date"/>
+					</group>
+					<group>
+						<field name="crt_date" invisible="1"/>
+						<field name="company_id" invisible='1'/>
+						<field name="to_date"/>
+					</group>
+				</group>
+				<group string ="Income Statement">
+					<field name="report_income_ids" nolabel='1'>
+						<tree editable="bottom" delete="false" create='false' >
+							<field name='category'/>
+							<field name='account'/>
+							<field name='acc_code'/>
+							<field name='currency_id' invisible="1"/>
+							<field name='total'/>
+						</tree>
+					</field>
+		       	</group>
+		       	
+				<footer>
+					<button name="print_report_values"
+	                            type="object" string="Print PDF"
+	                            class="oe_highlight"/>
+					 or					
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_income_statement" model="ir.actions.act_window">
+		<field name="name">Income Statement</field>
+		<field name="res_model">income.statement.report</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="income_statement_report_view"/>
+		<field name="target">new</field>
+	</record>
+
+	<!-- <menuitem id="income_statement_report" sequence="5"
+                  name="Income Statement" parent="base_accounting_kit.account_reports_generic_statements"
+                  action="aaq_invoice.action_income_statement"/> -->
+
+    <record id="expense_statement_report_view" model="ir.ui.view">
+		<field name="name">expense.statement.report</field>
+		<field name="model">expense.statement.report</field>
+		<field name="arch" type="xml">
+			<form>
+				<group>
+					<group>
+						<field name="from_date"/>
+					</group>
+					<group>
+						<field name="crt_date" invisible="1"/>
+						<field name="company_id" invisible='1'/>
+						<field name="to_date"/>
+					</group>
+				</group>
+				<group string ="Expense Statement">
+					<field name="report_expense_ids" nolabel='1'>
+						<tree editable="bottom" delete="false" create='false' >
+							<field name='category'/>
+							<field name='account'/>
+							<field name='acc_code'/>
+							<field name='currency_id' invisible="1"/>
+							<field name='total'/>
+						</tree>
+					</field>
+		       	</group>
+		       	
+				<footer>
+					<button name="print_report_values"
+	                            type="object" string="Print PDF"
+	                            class="oe_highlight"/>
+					 or					
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_expense_statement" model="ir.actions.act_window">
+		<field name="name">Expense Statement</field>
+		<field name="res_model">expense.statement.report</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="expense_statement_report_view"/>
+		<field name="target">new</field>
+	</record>
+
+	<menuitem id="expense_statement_report" sequence="6"
+                  name="Expense Statement" parent="base_accounting_kit.account_reports_generic_statements"
+                  action="acc_costing.action_expense_statement"/>
+</odoo>

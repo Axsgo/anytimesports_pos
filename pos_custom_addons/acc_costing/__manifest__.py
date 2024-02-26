@@ -1,0 +1,23 @@
+{
+    'name': 'Landed Costing',
+    'version': '0.1',
+    'Summary': ' Product Landed Costing',
+    'author': 'Prashanna',
+    'description': 'Product Landed Costing',
+    'website': '',
+    'category': 'Product',
+    'data': [
+    'ir.model.access.csv',
+    'product_view.xml',
+    'bill_report_view.xml',
+    'costing_report_view.xml',
+    'ax_shipment_master_view.xml',
+    'ax_expense_statement_report_view.xml',
+    # 'income_expense_statement_wizard_view.xml',
+    'acc_estimation_view.xml',
+    ],
+    'depends': ['base','product','stock','sale','purchase','account','stock_landed_costs','sale_margin','acc_users'],
+    'installable': True,
+    'auto_install': False,
+    'application': True,
+}

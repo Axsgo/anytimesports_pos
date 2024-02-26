@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="pos_config_inherit_form_view_for_qty" model="ir.ui.view">
+        <field name="name">pos.config.inherit.form</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='inventory_location']" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box" title="Location for stock allocation.">
+                    <div class="o_setting_right_pane">
+                        <label for="location_id" string="Stock Location"/>
+                        <div class="text-muted">
+                            Product quantity will be calculated from this location alone
+                        </div>
+                        <div class="content-group mt16">
+                            <field name="location_id" required="1" domain="[('usage','=','internal'),('company_id', '=', company_id)]"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

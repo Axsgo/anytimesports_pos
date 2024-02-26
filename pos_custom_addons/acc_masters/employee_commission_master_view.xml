@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<record id="sequence_acc_employee_commission" model="ir.sequence">
+            <field name="name">Employee Commission</field>
+            <field name="code">employee.commission</field>
+            <field name="prefix">EC</field>
+            <field name="padding">3</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    	<!-- Form view -->
+        <record id="acc_employee_commission_form_view" model="ir.ui.view">
+            <field name="name">Employee Commission</field>
+            <field name="model">employee.commission</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+				<form string="Employee Commission">
+					<header>
+						<button name = "entry_approve" type = "object" string = "Approve" class = "oe_highlight" states = "draft"/>
+						<button name = "entry_draft" type = "object" string = "Set to Draft " states = "approved"/>
+						<button name = "entry_close" type = "object" string = "Close" class = "oe_highlight" states = "approved"/>
+						<field name="state" widget="statusbar"/>
+					</header>
+					<sheet>
+					<div class="oe_title">
+                        <h2>
+                            <field name="name" readonly="1"/>
+                        </h2>
+                    </div> 
+						<group> 
+							<group>
+								<field name="date_start" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+						    	<field name="company_id" required='1' options="{'no_create': True, 'no_create_edit':True}" groups="base.group_multi_company" attrs="{'readonly':[('state','!=','draft')]}"/>
+						    	<field name="line_employee_ids" widget="many2many_tags" invisible='1'/>
+						    	<field name="enable_line" invisible='1'/>
+							</group>
+							<group>
+								<field name="date_end" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="crt_date" readonly='1' />
+								<field name='currency_id' invisible="1"/>
+							</group>
+						</group>
+						<notebook>
+							<page string = "Employee Commission Details">
+								<group>
+									<field name="report_employee_commision_ids" nolabel='1' attrs="{'readonly':[('state','!=','draft')]}">
+										<tree editable="bottom">
+											<field name='employee_id' width='1.0' required='1' options="{'no_create': True, 'no_open':True}"/>
+											<!-- <field name="is_fixed" width='0.7'/> -->
+											<field name="commission_type" required='1' width='1.0'/>
+											<field name='variable_amount' widget="monetary" width="1.0" options="{'currency_field': 'currency_id'}" attrs="{'readonly':[('commission_type','=','sales_range')],'required':[('commission_type','!=','sales_range')]}"/>
+											<field name='currency_id' invisible="1"/>
+										</tree>
+									</field>
+	                            </group>
+	                            <!-- <group name="note_group" col="6" class="mt-2 mt-md-0">
+	                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+	                                    <field name="total_amt" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+	                                </group>
+	                                <div class="oe_clear"/>
+	                            </group> -->
+	                            <group>
+	                            	<field name="report_employee_commision_line_ids" nolabel='1' attrs="{'readonly':[('state','!=','draft')],'invisible':[('enable_line','=',False)]}">
+	                            		<tree editable="bottom">
+	                            			<field name="employee_id" width='1.0' options="{'no_create': True, 'no_open':True}" required='1' domain="[('id','in',parent.line_employee_ids)]"/>
+	                            			<field name="sales_range" width='1.0' required='1'/>
+	                            			<field name='variable_amount' width='1.0' required='1'/>
+	                            			<field name="currency_id" invisible='1'/>
+	                            		</tree>
+	                            	</field>
+	                            </group>
+							</page>		
+							<page string = "Entry Info">
+								<group>
+									<group>
+										<field name = "user_id"/>
+										<field name = "ap_rej_user_id"/>
+										<field name = "update_user_id"/>
+									</group>
+									<group>
+										<field name = "crt_date"/>
+										<field name = "ap_rej_date"/>
+										<field name = "update_date"/>
+									</group>
+								</group>
+							</page>		
+						</notebook>
+					</sheet>
+				</form>
+            </field>
+        </record>
+        <!-- Tree View -->
+        <record id="acc_employee_commission_tree_view" model="ir.ui.view">
+            <field name="name">Employee Commission</field>
+            <field name="model">employee.commission</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+             <tree string="Employee Commission" default_order = "crt_date desc"> 
+				<field name="crt_date"/>
+				<field name="name"/>
+				<field name="company_id" groups="base.group_multi_company"/>
+				<field name="total_amt" width="1.0"/>
+				<field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_acc_employee_commission" model="ir.actions.act_window">  
+            <field name="name">Employee Commission</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">employee.commission</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="acc_employee_commission_tree_view"></field>
+        </record>
+
+        <!-- Menuitems -->
+    	<menuitem name="Employee Commission" id="pm_employee_commission" parent="tpm_masters" action="action_acc_employee_commission" sequence='9' groups="acc_users.approver_user_group"/>
+
+        <!-- Record Rule -->
+    	<record id="rule_acc_employee_commission" model="ir.rule">
+            <field name="name">Employee Commission multi-company</field>
+            <field name="model_id" ref="model_employee_commission"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id','in',company_ids)]</field>
+        </record>         
+            
+    </data>
+</openerp>

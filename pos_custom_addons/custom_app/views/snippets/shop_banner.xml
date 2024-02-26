@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="shop_banner" name="Shop Banner">
+        <section class="s_testimonial">
+            <div class="container-fluid">
+                <div class="d-flex flex-wrap">
+                    <div class="col-lg-6">
+                        <div class="left-content">
+                            <div class="thumb">
+                                <div class="inner-content">
+                                    <h4>We Are Hexashop</h4>
+                                    <span class="span-text">Awesome, clean &amp; creative HTML5 Template</span>
+                                    <div class="main-border-button">
+                                        <a href="#">Purchase Now!</a>
+                                    </div>
+                                </div>
+                                <img src="/theme_home/static/src/img/left-banner-image.jpg" alt=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="right-content">
+                            <div class="d-flex flex-wrap">
+                                <div class="col-lg-6">
+                                    <div class="right-first-image">
+                                        <div class="thumb">
+                                            <div class="content">
+                                                <div class="inner-content">
+                                                    <h4>Women</h4>
+                                                    <span>Best Clothes For Women</span>
+                                                </div>
+                                                <div class="hover-content">
+                                                    <div class="inner">
+                                                        <h4>Women</h4>
+                                                        <p>Lorem ipsum dolor sit amet, conservisii ctetur adipiscing elit incid.</p>
+                                                        <div class="main-border-button">
+                                                            <a href="#">Discover More</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <img src="/theme_home/static/src/img/baner-right-image-01.jpg"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="right-first-image">
+                                        <div class="thumb">
+                                            <div class="inner-content">
+                                                <h4>Men</h4>
+                                                <span>Best Clothes For Men</span>
+                                            </div>
+                                            <div class="hover-content">
+                                                <div class="inner">
+                                                    <h4>Men</h4>
+                                                    <p>Lorem ipsum dolor sit amet, conservisii ctetur adipiscing elit
+                                                        incid.
+                                                    </p>
+                                                    <div class="main-border-button">
+                                                        <a href="#">Discover More</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <img src="/theme_home/static/src/img/baner-right-image-02.jpg"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 position-relative">
+                                    <div class="right-first-image">
+                                        <div class="thumb">
+                                            <div class="content">
+                                                <div class="inner-content">
+                                                    <h4>Kids</h4>
+                                                    <span>Best Clothes For Kids</span>
+                                                </div>
+                                                <div class="hover-content">
+                                                    <div class="inner">
+                                                        <h4>Kids</h4>
+                                                        <p>Lorem ipsum dolor sit amet, conservisii ctetur adipiscing
+                                                            elit
+                                                            incid.
+                                                        </p>
+                                                        <div class="main-border-button">
+                                                            <a href="#">Discover More</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <img src="/theme_home/static/src/img/baner-right-image-03.jpg"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="right-first-image">
+                                        <div class="thumb">
+                                            <div>
+                                                <div class="inner-content">
+                                                    <h4>Accessories</h4>
+                                                    <span>Best Trend Accessories</span>
+                                                </div>
+                                                <div class="hover-content">
+                                                    <div class="inner">
+                                                        <h4>Accessories</h4>
+                                                        <p>Lorem ipsum dolor sit amet, conservisii ctetur adipiscing
+                                                            elit
+                                                            incid.
+                                                        </p>
+                                                        <div class="main-border-button">
+                                                            <a href="#">Discover More</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <img src="/theme_home/static/src/img/baner-right-image-04.jpg"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </template>
+    <template id="shop_home_page" inherit_id="website.snippets" name="Shop Home Page">
+        <xpath expr="//div[@id='snippet_structure']/div[hasclass('o_panel_body')]" position="inside">
+            <t t-snippet="theme_home.shop_banner"
+               t-thumbnail="/theme_home/static/src/snippets/img/s_media_list.svg"/>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+    	<!-- Paperformat -->
+		<record id="ax_costing_bill_paperformat"
+            model="report.paperformat">
+            <field name="name">Axsgo Costing Bill Paperformat</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">5.00</field>
+            <field name="margin_bottom">10.00</field>
+            <field name="margin_left">4.00</field>
+            <field name="margin_right">4.00</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">140</field>
+        </record>
+
+        <report 
+            id="action_costing_bill_report"
+            model="ax.costing.report"
+            string="Costing Report"
+            report_type="qweb-pdf"
+            name="acc_costing.costing_report_bill_template"
+            file="acc_costing.costing_report_bill_template"
+            paperformat="acc_costing.ax_costing_bill_paperformat"
+            menu="False"
+            />
+
+        <template id="costing_report_bill_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-if="o and 'company_id' in o">
+                        <t t-set="company" t-value="o.company_id"></t>
+                    </t>
+                    <t t-if="not o or not 'company_id' in o">
+                        <t t-set="company" t-value="res_company"></t>
+                    </t>
+                    <div class="header">
+                    </div>
+                    <t t-call="web.external_layout">
+                        <t t-set="doc" t-value="doc.with_context({'lang':zh_CN})" />
+                        <div class="page">
+                            <div class="oe_structure"/>
+                            <table class="table table-sm table-borderless">
+                                <tr style="border-bottom:1px solid black">
+                                    <td style="padding-left: 80px;">
+                                        <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)" style="max-height: 90px;" />
+                                    </td>
+                                    <td colspan='3'>
+                                        <strong><center><h3 style="margin-right:140px;"><span t-field="doc.company_id.name"/></h3></center></strong>
+                                        <center style="margin-right:140px;"><span  t-field="doc.company_id.street"/>,<span t-field="doc.company_id.street2"/>,<span t-field="doc.company_id.city"/>, 
+                                        <span t-field="doc.company_id.zip"/></center>
+                                        <center style="margin-right:140px;"><span>Email: </span><span t-field="doc.company_id.email"/>, <span>Phone: </span><span t-field="doc.company_id.phone"/></center>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="table table-sm table-borderless">
+                                <t t-set="sno" t-value="1" />
+                                <t t-set="goods_value_1" t-value='0'/>
+                                <t t-set="goods_value_2" t-value='0'/>
+                                <t t-set="inv_value_1" t-value='0'/>
+                                <t t-set="inv_value_2" t-value='0'/>
+                                <t t-set="lc_1" t-value='0'/>
+                                <t t-set="lc_2" t-value='0'/>
+                                <tr>
+                                    <td colspan='4'>
+                                        SUPPLIER'S: <b><span t-field='doc.partner_ids'/></b>
+                                    </td>
+                                    <td colspan='2' class="text-right">PO NO's: <b><span t-field="doc.po_ids"/></b></td>
+                                </tr>
+                                <tr>
+                                    <td colspan='2'>ARRAIVAL DATE: <b><span t-field="doc.shipment_id.date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></b></td>
+                                    <td colspan='2' class='text-center'></td>
+                                    <td colspan='2' class='text-right'>SHIPMENT NO.: <b><span t-field="doc.shipment_id.name"/></b></td>
+                                </tr>
+                                <tr>
+                                    <td colspan='4' class='text-right'>Money Value in</td>
+                                    <td style="background-color:#ff9800;color:#fff;vertical-align: middle;" class="text-right"><span t-field='doc.currency_id.name'/></td>
+                                    <td style="background-color:#ff9800;color:#fff;vertical-align: middle;" class="text-right"><span t-field='doc.company_id.currency_id.name'/></td>
+                                </tr>
+                                <tr>
+                                    <td colspan='4' class='text-right'>Exchange Rate</td>
+                                    <td class="text-right" style="background-color:#a3a2a2"><span t-esc='doc.currency_convert(1,doc.shipment_id)'/></td>
+                                    <td class="text-right" style="background-color:#a3a2a2"><span t-esc='doc.currency_inverse_convert(1,doc.shipment_id)'/></td>
+                                </tr>
+                                <t t-foreach='doc.vendor_bill_ids' t-as='o'>
+                                    <tr>
+                                        <td class="text-right">
+                                            <span t-esc="sno" />.
+                                        </td>
+                                        <td colspan='3'>
+                                            <span t-field='o.ref'/>
+                                        </td>
+                                        <td class='text-right'>
+                                            <span t-field='o.amount_total' t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                            <t t-set='goods_value_1' t-value='goods_value_1+o.amount_total'/>
+                                        </td>
+                                        <td class='text-right'>
+                                            <span t-esc="abs(o.amount_total_signed)"
+                                                        t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/>
+                                            <t t-set='goods_value_2' t-value='goods_value_2+abs(o.amount_total_signed)'/>
+                                        </td>
+                                        <t t-set="sno" t-value="sno+1" />
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td class="text-right" colspan='4'><b>Total Goods Value</b></td>
+                                    <td class='text-right' style="background-color:#a3a2a2"><b><span t-esc='round(goods_value_1,6)' t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></b></td>
+                                    <td class='text-right' style="background-color:#a3a2a2"><b><span t-esc='round(goods_value_2,6)' t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></b></td>
+                                </tr>
+                                <t t-set="sno" t-value="1" />
+                                <t t-foreach='doc.line_ids' t-as='l'>
+                                    <t t-if="l.product_id.type == 'service' and l.move_line_id.is_landed_costs_line != True">
+                                        <tr>
+                                            <td class="text-right">
+                                                <span t-esc="sno" />.
+                                            </td>
+                                            <td colspan='3'>
+                                                <span t-field="l.product_id.name"/>
+                                            </td>
+                                            <td class='text-right'>
+                                                <span t-field="l.price_subtotal" t-field-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                <t t-set='inv_value_1' t-value='inv_value_1+l.price_subtotal'/>
+                                            </td>
+                                            <td class='text-right'>
+                                                <span t-esc="doc.currency_convert(l.price_subtotal,l)" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/>
+                                                <t t-set='inv_value_2' t-value='inv_value_2+doc.currency_convert(l.price_subtotal,l)'/>
+                                            </td>
+                                            <t t-set="sno" t-value="sno+1" />
+                                        </tr>
+                                    </t>
+                                </t>
+                                <tr>
+                                    <td class="text-right" colspan='4'><b>Total Invoice Value</b></td>
+                                    <td class='text-right' style="background-color:#a3a2a2"><b><span t-esc='round((goods_value_1 + inv_value_1),6)' t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></b></td>
+                                    <td class='text-right' style="background-color:#a3a2a2"><b><span t-esc='round((goods_value_2 + inv_value_2),6)' t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></b></td>
+                                </tr>
+                                <t t-set="sno" t-value="1" />
+                                <t t-foreach='doc.landed_cost_ids' t-as='l'>
+                                    <t t-if="l.product_id.type == 'service' and l.move_line_id.is_landed_costs_line == True">
+                                        <tr>
+                                            <td class="text-right">
+                                                <span t-esc='sno'/>.
+                                            </td>
+                                            <td colspan='3'>
+                                                <span t-field="l.product_id.name"/>
+                                            </td>
+                                            <td class='text-right'>
+                                                <span t-esc="doc.currency_inverse_convert(l.price_subtotal,l)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                <t t-set='lc_1' t-value='lc_1+doc.currency_inverse_convert(l.price_subtotal,l)'/>
+                                            </td>
+                                            <td class='text-right'>
+                                                <span t-esc="l.price_subtotal" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/>
+                                                <t t-set='lc_2' t-value='lc_2+l.price_subtotal'/>
+                                            </td>
+                                            <t t-set="sno" t-value="sno+1" />
+                                        </tr>
+                                    </t>
+                                </t>
+                                <tr>
+                                    <td colspan='4' class='text-right'><b>Landed Cost</b></td>
+                                    <td class='text-right' style="background-color:#a3a2a2"><b><span t-esc='round((goods_value_1 + inv_value_1 + lc_1),6)' t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></b></td>
+                                    <td class='text-right' style="background-color:#a3a2a2"><b><span t-esc='round((goods_value_2 + inv_value_2 + lc_2),6)' t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></b></td>
+                                </tr>
+                                <tr>
+                                    <td colspan='4' class='text-right'><b>Factor</b></td>
+                                    <td style="background-color:#a3a2a2"></td>
+                                    <td class='text-right' style="background-color:#a3a2a2"><b><span t-field='doc.landed_cost_factor'/></b></td>
+                                </tr>
+                            </table>
+                            <table class="table table-sm table-borderless">
+                                <!-- <thead> -->
+                                    <tr style="border:1px solid black;background-color:#ff9800;color:#fff;vertical-align: middle;">
+                                        <td colspan='10' class="text-center"><b>Details of Invoice</b></td>
+                                    </tr>
+                                    <tr style="border:1px solid black;">
+                                        <td style="background-color:#ff9800;color:#fff;width:3% !important;vertical-align: middle;" class="text-center">Sl.No</td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important;vertical-align: middle;" class="text-center">Code No.</td>
+                                        <td style="background-color:#ff9800;color:#fff;width:25% !important;vertical-align: middle;" class="text-center">Name of Product</td>
+                                        <!-- <td style="background-color:#ff9800;color:#fff;width:10% !important">HSN</td> -->
+                                        <!-- <td style="background-color:#ff9800;color:#fff;width:5% !important">UOM</td> -->
+                                        <td style="background-color:#ff9800;color:#fff;width:5% !important;vertical-align: middle;" class="text-center">QTY</td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important;vertical-align: middle;" class="text-center">Rate / Kg in <span t-field='doc.currency_id.name'/></td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important;vertical-align: middle;" class="text-center">Landed Cost in <span t-field='doc.currency_id.symbol'/></td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important;vertical-align: middle;" class="text-center">QTY x Landed Cost</td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important;vertical-align: middle;" class="text-center">Total Amount in <span t-field='doc.company_id.currency_id.name'/></td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important;vertical-align: middle;" class="text-center">Cost Price in <span t-field='doc.company_id.currency_id.name'/></td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important;vertical-align: middle;" class="text-center">Sale Price in <span t-field='doc.company_id.currency_id.name'/></td>
+                                        <!-- <t t-if="doc.is_discount == True">
+                                            <td style="background-color:#ff9800;color:#fff;width:10% !important" class="text-right">Discount %</td>
+                                            <td style="background-color:#ff9800;color:#fff;width:10% !important" class="text-right">Discount Amount</td>
+                                            <t t-set="col_count" t-value="col_count+2"/>
+                                        </t>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important" class="text-right">Taxes %</td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important" class="text-right">Tax Amount</td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important" class="text-right">Gross Value</td>
+                                        <td style="background-color:#ff9800;color:#fff;width:10% !important" class="text-right">Net Amount</td> -->
+                                    </tr>
+                                <!-- </thead> -->
+                                <tbody>
+                                    <t t-set="sno" t-value="1" />
+                                    <t t-set='landed_cost_1' t-value='0'/>
+                                    <t t-set='landed_cost_2' t-value='0'/>
+                                    <!-- <t t-foreach="doc.line_ids" t-as="l">
+                                        <t t-if="l.product_id.type != 'service' and l.move_line_id.is_landed_costs_line != True">
+                                            <tr style="border:1px solid black;">
+                                                <td class="text-center">
+                                                    <span t-esc="sno" />
+                                                </td>
+                                                <td ><span t-field="l.product_id.default_code"/></td>
+                                                <td >
+                                                    <span t-field="l.product_id.name"/>
+                                                </td>
+                                                <td class="text-right"><span t-field="l.qty"/></td>
+                                                <td class="text-right">
+                                                    <span t-field="l.price_unit" widget='monetary'
+                                                        t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-esc="round((l.price_unit*doc.landed_cost_factor),6)"/>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-esc="round((l.price_unit*doc.landed_cost_factor*l.qty),6)"/>
+                                                    <t t-set="landed_cost_1" t-value="landed_cost_1+round((l.price_unit*doc.landed_cost_factor*l.qty),6)"/>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-esc="round(doc.currency_convert(l.price_unit*doc.landed_cost_factor*l.qty,l),6)"/>
+                                                    <t t-set="landed_cost_2" t-value="landed_cost_2+round(doc.currency_convert(l.price_unit*doc.landed_cost_factor*l.qty,l),6)"/>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-esc="l.expected_cost_price" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span t-esc="l.expected_purchase_price"
+                                                        t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/>
+                                                </td> 
+                                                <t t-set="sno" t-value="sno+1" />
+                                            </tr>
+                                        </t>
+                                    </t> -->
+                                    <t t-foreach="doc.costing_line_ids" t-as='l'>
+                                        <tr style="border:1px solid black;">
+                                            <td class="text-center">
+                                                <span t-esc="sno" />
+                                            </td>
+                                            <td ><span t-field="l.product_id.default_code"/></td>
+                                            <td >
+                                                <span t-field="l.product_id.name"/>
+                                            </td>
+                                            <td class="text-right"><span t-field="l.qty"/></td>
+                                            <td class="text-right">
+                                                <span t-field="l.price_unit" widget='monetary'
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="l.costing_price" widget='monetary'
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="l.price_subtotal" widget='monetary'
+                                                    t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                <t t-set="landed_cost_1" t-value="landed_cost_1+l.price_subtotal"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="l.price_subtotal_unsigned" widget='monetary'
+                                                    t-options='{"widget": "monetary", "display_currency": l.company_currency_id}'/>
+                                                <t t-set="landed_cost_2" t-value="landed_cost_2+l.price_subtotal_unsigned"/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="l.cost_price" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-field="l.sale_price"
+                                                    t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/>
+                                            </td> 
+                                            <t t-set="sno" t-value="sno+1" />
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td style="border-left:1px solid black;border-bottom:1px solid black;background-color:#ff9800;color:#fff;vertical-align: middle;" colspan='6' class="text-center">Landed Cost</td>
+                                        <td style="border-bottom:1px solid black" class="text-right">
+                                            <b><span t-esc='round(landed_cost_1,6)' t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></b>
+                                        </td>
+                                        <td style="border-bottom:1px solid black" class="text-right">
+                                            <b><span t-esc='round(landed_cost_2,6)' t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></b>
+                                        </td>
+                                        <td style="border-bottom:1px solid black;border-right:1px solid black" colspan='2'></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="footer"></div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

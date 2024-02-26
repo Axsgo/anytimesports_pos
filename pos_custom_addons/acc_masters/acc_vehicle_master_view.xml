@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<!-- Form view -->
+        <record id="acc_vehicle_form_view" model="ir.ui.view">
+            <field name="name">Vehicle</field>
+            <field name="model">acc.vehicle</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+				<form string="Vehicle">
+					<header>
+						<button name = "entry_approve" type = "object" string = "Approve" states = "draft" class = "oe_highlight"/>
+						<button name = "entry_draft" type = "object" string = "Set to Draft" states = "approved"/>
+						<button name = "entry_cancel" type = "object" string = "Cancel" states = "draft"/>
+						<field name="state" widget="statusbar" statusbar_visible='draft,approved,cancel'/>
+					</header>
+					<sheet> 
+						<div class="oe_title">
+	                        <h1>
+	                            <field name="name" required='1' attrs="{'readonly':[('state','!=','draft')]}" placeholder="X 00000"/>
+	                        </h1>
+	                    </div>
+						<group> 
+							<group>
+								<field name="vehicle_name" required='0' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="manufacturer" required='0' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="kms_driven" required='0' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="ins_no" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="reg_expiry" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+							</group>
+							<group>
+								<field name="model" required='0' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="year" required='0' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="kms_as_on" required='0' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="ins_expiry" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="notes" required='0' attrs="{'readonly':[('state','!=','draft')]}"/>
+							</group>
+						</group>
+						<notebook>
+							<page string = "Entry Info">
+								<group>
+									<group>
+										<field name="company_id" force_save='1' attrs="{'readonly':[('state','!=','draft')]}" options="{'no_create': True, 'no_create_edit':True}" groups="base.group_multi_company"/>
+									</group>
+									<group></group>
+									<group>
+										<field name = "user_id"/>
+										<field name = "update_user_id"/>
+										<field name = "ap_rej_user_id"  attrs = "{'invisible':[('state','=','draft')]}"/>
+										<field name = "cancel_user_id"  attrs = "{'invisible':[('state','!=','cancel')]}"/>
+									</group>
+									<group>
+										<field name = "crt_date"/>
+										<field name = "update_date"/>
+										<field name = "ap_rej_date"  attrs = "{'invisible':[('state','=','draft')]}"/>
+										<field name = "cancel_date"  attrs = "{'invisible':[('state','!=','cancel')]}"/>
+									</group>
+								</group>
+							</page>		
+						</notebook>
+					</sheet>
+				</form>
+            </field>
+        </record>
+        <!-- Tree View -->
+        <record id="acc_vehicle_tree_view" model="ir.ui.view">
+            <field name="name">Vehicle</field>
+            <field name="model">acc.vehicle</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+             <tree string="Vehicle"  
+				decoration-info = "state == 'draft'" decoration-bf = "state == 'approved'" default_order = "crt_date desc"> 
+				<field name="crt_date"/>
+				<field name="user_id"/>
+				<field name="name" />
+				<field name="vehicle_name"/>
+				<field name="ins_no"/>
+				<field name="ins_expiry"/>
+				<field name="reg_expiry"/>
+				<field name="company_id" groups="base.group_multi_company"/>
+				<field name="state"/>  			 
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search View Start -->
+	
+	<record id="acc_vehicle_search_view" model="ir.ui.view">
+		<field name="name">Vehicle</field>
+		<field name="model">acc.vehicle</field>
+		<field name="arch" type="xml">
+			<search string="Vehicle">
+				<field name="name" string="Name"  filter_domain="[('name','ilike',self)]" />
+				<filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+				<filter name="approved" string="Approved" domain="[('state','=','approved')]"/>				
+				<filter name="cancel" string="Cancelled" domain="[('state','=','cancel')]"/>
+				<group expand="0" string="Group By...">
+					<filter name="crt_date" string="Creation Date" domain="[]" context="{'group_by':'crt_date'}"/> 
+					<filter name="user_id" string="Created By" domain="[]" context="{'group_by':'user_id'}"/>
+					<filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+				</group>
+			</search>
+		</field>
+	</record>
+	
+	<!-- Search View End -->
+
+
+
+        <record id="action_acc_vehicle" model="ir.actions.act_window">  
+            <field name="name">Vehicle</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">acc.vehicle</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="acc_vehicle_tree_view"></field>
+            <field name="search_view_id" ref="acc_vehicle_search_view"/>
+        </record>
+
+        <!-- Menuitems -->
+        <menuitem name="Masters" id="tpm_masters" sequence='0' web_icon="acc_masters,static/img/icon.png" groups="base.group_erp_manager"/>
+    	<menuitem name="Vehicle" id="pm_acc_vehicle" parent="acc_masters.tpm_masters" action="action_acc_vehicle" sequence='11'/>
+
+        <!-- Record Rule -->
+    	<record id="rule_acc_vehicle" model="ir.rule">
+            <field name="name">Vehicle multi-company</field>
+            <field name="model_id" ref="model_acc_vehicle"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id','in',company_ids)]</field>
+        </record>
+
+        <!-- Followup Scheduler -->
+        <record id="acc_vehicle_ins_expiry_scheduler" model="ir.cron">
+            <field name="name">Vehicle Expiry Scheduler</field>
+            <field name="model_id" ref="model_acc_vehicle"/>
+            <field name="state">code</field>
+            <field name="code">model._entry_vehicle_expiry()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="doall" eval="False"/>
+        </record>
+
+        <!-- Vehicle Insurance Expiry Mail -->
+        <record id="email_template_acc_vehcile_ins_mail" model="mail.template">
+            <field name="name">Vehicle Insurance Expiry Alert Mail</field>
+            <field name="model_id" ref="model_acc_vehicle"/>
+            <field name="email_from">${ctx['email'] |safe}</field>
+            <field name="email_to">${ctx['email_to'] |safe}</field>
+            <field name="email_cc"></field>
+            <field name="subject">Vehicle Insurance Expiry - ${object.name}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    	Dear ${ctx['admin_name']},
+                        <br></br>
+                        <br></br>
+                        This is a reminder mail that the Car Insurance for vehicle - <b>${object.name}</b> is going to expire soon!!!. Kindly find the further details below.
+                        <br></br>
+                        <br></br>
+                        Vehicle No        : ${object.name},<br></br>
+                        Vehicle Name      : ${object.vehicle_name},<br></br>
+                        Insurance No      : ${object.ins_no},<br></br>
+                        Expiry Date       : ${object.ins_expiry.strftime('%d/%m/%Y')},<br></br>
+                        Status            : ${ctx['status']}.<br></br>
+                        <br></br>
+                        <br></br>
+                        Please feel free to contact us if you have any questions.
+                    </p>
+                </div>
+            </field>
+            <field name="lang">${object.user_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+            
+        <!-- Vehicle Registration Expiry Mail -->
+        <record id="email_template_acc_vehcile_reg_mail" model="mail.template">
+            <field name="name">Vehicle Registration Expiry Alert Mail</field>
+            <field name="model_id" ref="model_acc_vehicle"/>
+            <field name="email_from">${ctx['email'] |safe}</field>
+            <field name="email_to">${ctx['email_to'] |safe}</field>
+            <field name="email_cc"></field>
+            <field name="subject">Vehicle Registration Expiry - ${object.name}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                    	Dear ${ctx['admin_name']},
+                        <br></br>
+                        <br></br>
+                        This is a reminder mail that the Car Registration for vehicle - <b>${object.name}</b> is going to expire soon!!!. Kindly find the further details below.
+                        <br></br>
+                        <br></br>
+                        Vehicle No        : ${object.name},<br></br>
+                        Vehicle Name      : ${object.vehicle_name},<br></br>
+                        Expiry Date       : ${object.reg_expiry.strftime('%d/%m/%Y')},<br></br>
+                        Status            : ${ctx['status']}.<br></br>
+                        <br></br>
+                        <br></br>
+                        Please feel free to contact us if you have any questions.
+                    </p>
+                </div>
+            </field>
+            <field name="lang">${object.user_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+            
+    </data>
+</openerp>

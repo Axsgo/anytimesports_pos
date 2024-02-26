@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="res_config_settings_view_form_product" model="ir.ui.view">
+        <field name="name">acc_stock.res.config.settings.view.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="45"/>
+        <field name="inherit_id" ref="stock.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+        	<!-- <xpath expr="//div[@id='manage_product_packaging']" position="before">
+        		<div class="col-12 col-lg-6 o_setting_box" id="temp_products">
+                    <div class="o_setting_left_pane">
+                        <field name="group_temp_product"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="group_temp_product"/>
+                        <div class="text-muted">
+                            Create Temporary Products and create Quotation
+                        </div>
+                    </div>
+                </div>
+        	</xpath> -->
+            <xpath expr="//div[@id='full_traceability']" position="after">
+                <div class="col-12 col-lg-6 o_setting_box" id="lot_auto_sequence" attrs="{'invisible': [('group_stock_production_lot', '=', False)]}" >
+                    <div class="o_setting_left_pane">
+                        <field name="enable_auto_lot"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="enable_auto_lot"/>
+                        <div class="text-muted">
+                            Enable automatic Serial No generation while in Reciepts (note: generate only for Serial No. and not for Lot No.)
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="res_config_settings_invoice_modification" model="ir.ui.view">
+        <field name="name">res.config.settings.invoice.modification</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-key='account']" position="inside">
+                <h2>Invoice From Stock Picking</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box" title="These taxes are set in any new product created.">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">Journals</span>
+                            <span class="fa fa-lg fa-building-o" title="Values set here are company-specific."
+                                  aria-label="Values set here are company-specific."
+                                  role="img"/>
+                            <div class="text-muted">
+                                Journals which should apply for the invoice creation from stock picking
+                            </div>
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label string="Sales Journal" for="customer_journal_id"
+                                           class="col-lg-3 o_light_label"/>
+                                    <field name="customer_journal_id"
+                                           domain="[('type', '=', 'sale')]"/>
+                                </div>
+                                <div class="row">
+                                    <label string="Purchase Journal" for="vendor_journal_id"
+                                           class="col-lg-3 o_light_label"/>
+                                    <field name="vendor_journal_id"
+                                           domain="[('type', '=', 'purchase')]"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Paperformat -->
+    <record id="acc_delivery_slip_paperformat"
+        model="report.paperformat">
+        <field name="name">ACC Delivery Slip Paperformat</field>
+        <field name="default" eval="True" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10.00</field>
+        <field name="margin_bottom">67.00</field>
+        <field name="margin_left">4.00</field>
+        <field name="margin_right">4.00</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">10</field>
+        <field name="dpi">140</field>
+    </record>
+
+	<record id="stock.action_report_delivery" model="ir.actions.report">
+        <field name="name">Delivery Slip</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">stock.report_deliveryslip</field>
+        <field name="report_file">stock.report_deliveryslip</field>
+        <field name="print_report_name">'Delivery Slip - %s - %s' % (object.partner_id.name or '', object.name)</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="acc_stock.acc_delivery_slip_paperformat"/>
+    </record>
+
+    <template id="stock.report_deliveryslip">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <!-- <t t-call="sale.report_saleorder_document" t-lang="doc.partner_id.lang"/> -->
+                <t t-if="o and 'company_id' in o">
+                    <t t-set="company" t-value="o.company_id"></t>
+                </t>
+                <t t-if="not o or not 'company_id' in o">
+                    <t t-set="company" t-value="res_company"></t>
+                </t>
+                <div class="header">
+                    <br/>
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td>
+                                <t t-if="doc.state == 'done'">
+                                    <span t-field="doc.name"/> <span t-field="doc.date_done" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                                </t>
+                                <t t-else="">
+                                    <span t-field="doc.name"/> <span t-field="doc.scheduled_date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                                </t>
+                            </td>
+                            <td class="text-right">
+                                <span>Page: </span><span class="page" /> / <span class="topage" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <t t-call="web.basic_layout">
+                    <t t-set="doc" t-value="doc.with_context({'lang':en_GB})" />
+                    <!-- <div class="pt-5" style="padding-top:2rem !important"></div> -->
+                    <div class="page">
+                        <table style="width:100% !important">
+                            <tr style="border-bottom:1px solid black">
+                                <td colspan='3' class='text-left' style="vertical-align:top">
+                                    <strong><span style="font-size:30px;" t-field="doc.company_id.name"/></strong><br/>
+                                    <strong><span >TRN ID: <span t-field="doc.company_id.vat"/></span></strong><br/>
+                                    <span><b>OFFICE:</b> <span  t-field="doc.company_id.street"/>, <span t-field="doc.company_id.street2"/>, <span t-field="doc.company_id.state_id.name"/>, <span t-field="doc.company_id.country_id.name"/>.</span><br/>
+                                    <span><b>WAREHOUSE:</b> <span  t-field="doc.company_id.war_street"/>, <span t-field="doc.company_id.war_street2"/>, <span t-field="doc.company_id.war_state_id.name"/>, <span t-field="doc.company_id.war_country_id.name"/>.</span><br/>
+                                    <b><span>EMAIL: </span></b><span t-field="doc.company_id.email"/><span>, accounts@accgulf.com</span><br/>
+                                    <b><span>PHONE: </span></b><span t-field="doc.company_id.phone"/><br/>
+                                </td>
+                                <td class='text-right' style="vertical-align:middle">
+                                    <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)" style="max-height: 200px;" />
+                                </td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <table class="table table-borderless table-sm" style="width:100%">
+                            <tr>
+                                <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                    <td colspan='4' style="background-color:#ff9800;border:1px solid black !important;font-weight:bold;vertical-align:middle">
+                                        <h4 style="font-weight:bold"><center>DELIVERY ORDER</center></h4>
+                                    </td>
+                                </t>
+                                <t t-else="">
+                                    <td colspan='4' style="background-color:#ff9800;border:1px solid black !important;font-weight:bold;vertical-align:middle">
+                                        <h4 style="font-weight:bold"><center>GRN</center></h4>
+                                    </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td style="width:50%;border:1px solid black !important" colspan='2'>
+                                    <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                        <b><span>CUSTOMER</span></b><br/>
+                                    </t>
+                                    <t t-else="">
+                                        <b><span>SUPPLIER</span></b><br/>
+                                    </t>
+                                    <span>Name: </span><span t-field='doc.partner_id.name'/><br/>
+                                    <span>Address: </span>
+                                    <t t-if="doc.partner_id.street">
+                                        <t t-esc="doc.partner_id.street"/><br/>
+                                    </t>
+                                    <t t-if="doc.partner_id.street2">
+                                        <t t-esc="doc.partner_id.street2"/><br/>
+                                    </t>
+                                    <!-- <t t-if="doc.partner_id.city">
+                                        <t t-esc="doc.partner_id.city"/><br/>
+                                    </t> -->
+                                    <t t-if="doc.partner_id.state_id">
+                                        <t t-esc="doc.partner_id.state_id.name"/>
+                                        <t t-if="doc.partner_id.country_id">
+                                            <span>,</span><t t-esc="doc.partner_id.country_id.name"/><br/>
+                                        </t>
+                                    </t>
+                                    <t t-if="doc.partner_id.phone">
+                                        <span>Phone: </span><t t-esc="doc.partner_id.phone"/>
+                                    </t>
+                                    <t t-if="doc.partner_id.mobile">
+                                        <span>Mobile: </span><t t-esc="doc.partner_id.mobile"/><br/>
+                                    </t>
+                                </td>
+                                <t t-if="doc.partner_shipping_id">
+                                    <td style="width:50%;border:1px solid black !important" colspan='2'>
+                                        <b><span>SHIPPING TO</span></b><br/>
+                                        <span>Name: </span><span t-field='doc.partner_id.name'/><br/>
+                                        <span>Contact Person: </span><span t-field='doc.partner_shipping_id.name'/><br/>
+                                        <span>Address: </span>
+                                        <t t-if="doc.partner_shipping_id.street">
+                                            <t t-esc="doc.partner_shipping_id.street"/><br/>
+                                        </t>
+                                        <t t-if="doc.partner_shipping_id.street2">
+                                            <t t-esc="doc.partner_shipping_id.street2"/><br/>
+                                        </t>
+                                        <!-- <t t-if="doc.partner_id.city">
+                                            <t t-esc="doc.partner_id.city"/><br/>
+                                        </t> -->
+                                        <t t-if="doc.partner_shipping_id.state_id">
+                                            <t t-esc="doc.partner_shipping_id.state_id.name"/>
+                                            <t t-if="doc.partner_shipping_id.country_id">
+                                                <span>,</span><t t-esc="doc.partner_shipping_id.country_id.name"/><br/>
+                                            </t>
+                                        </t>
+                                        <t t-if="doc.partner_shipping_id.phone">
+                                            <span>Phone: </span><t t-esc="doc.partner_shipping_id.phone"/>
+                                        </t>
+                                        <t t-if="doc.partner_shipping_id.mobile">
+                                            <span>Mobile: </span><t t-esc="doc.partner_shipping_id.mobile"/><br/>
+                                        </t>
+                                    </td>
+                                </t>
+                                <t t-else="">
+                                    <td style="width:50%;border:1px solid black !important" colspan='2'>
+                                        <b><span>SHIPPING TO</span></b><br/>
+                                        <span>Name: </span><span t-field='doc.partner_id.name'/><br/>
+                                        <span>Address: </span>
+                                        <t t-if="doc.partner_id.street">
+                                            <t t-esc="doc.partner_id.street"/><br/>
+                                        </t>
+                                        <t t-if="doc.partner_id.street2">
+                                            <t t-esc="doc.partner_id.street2"/><br/>
+                                        </t>
+                                        <t t-if="doc.partner_id.city">
+                                            <t t-esc="doc.partner_id.city"/><br/>
+                                        </t>
+                                        <t t-if="doc.partner_id.state_id">
+                                            <t t-esc="doc.partner_id.state_id.name"/>
+                                            <t t-if="doc.partner_id.country_id">
+                                                <span>,</span><t t-esc="doc.partner_id.country_id.name"/><br/>
+                                            </t>
+                                        </t>
+                                        <span>Phone: </span><t t-esc="doc.partner_id.phone"/><br/>
+                                    </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid black !important;">
+                                    <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                        <span>D/O No: </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span>GRN No:</span>
+                                    </t>
+                                </td>
+                                <td style="border:1px solid black !important;">
+                                    <b><span t-field="doc.name"/></b>
+                                </td>
+                                <td style="border:1px solid black !important;">
+                                    <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                        <span>D/O Date: </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span>GRN Date:</span>
+                                    </t>
+                                </td>
+                                <td style="border:1px solid black !important;">
+                                    <b>
+                                        <t t-if="doc.date_done">
+                                            <span t-field="doc.date_done" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="doc.scheduled_date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                                        </t>
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid black !important;">
+                                    <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                        <span>Sale No: </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span>Purchase No:</span>
+                                    </t>
+                                </td>
+                                <td style="border:1px solid black !important;">
+                                    <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                        <b><span t-field="doc.sale_id.name"/></b>
+                                    </t>
+                                    <t t-else="">
+                                        <b><span t-field="doc.purchase_id.name"/></b>
+                                    </t>
+                                </td>
+                                <td style="border:1px solid black !important;">
+                                    <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                        <span>Sale Date: </span>
+                                    </t>
+                                    <t t-else="">
+                                        <span>Purchase Date:</span>
+                                    </t>
+                                </td>
+                                <td style="border:1px solid black !important;">
+                                    <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                        <b><span t-field="doc.sale_id.date_order" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></b>
+                                    </t>
+                                    <t t-else="">
+                                        <b><span t-field="doc.purchase_id.date_approve" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></b>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid black !important;">
+                                    <span>Reference NO: </span>
+                                </td>
+                                <td style="border:1px solid black !important;">
+                                    <b><span t-field="doc.ref_no"/></b>
+                                </td>
+                                <td style="border:1px solid black !important;">
+                                    <span>Reference Date:</span>
+                                </td>
+                                <td style="border:1px solid black !important;">
+                                    <b><span t-field="doc.ref_date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></b>
+                                </td>
+                            </tr>
+                            <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                <tr>
+                                    <td style="border:1px solid black !important;">
+                                        <span>C/Code: </span>
+                                    </td>
+                                    <td style="border:1px solid black !important;">
+                                        <b><span t-field="doc.partner_id.partner_no"/></b>
+                                    </td>
+                                    <td style="border:1px solid black !important;">
+                                        <span>Salesperson:</span>
+                                    </td>
+                                    <td style="border:1px solid black !important;">
+                                        <b><span t-field="doc.sale_id.user_id.name"/></b>
+                                    </td>
+                                </tr>
+                            </t>
+                        </table>
+                        <table class="table table-sm table-borderless">
+                            <thead>
+                                <tr>
+                                    <td style="border:1px solid black !important;background-color:#ff9800;width:3% !important;font-weight:bold;vertical-align:middle" class="text-center">SL.NO</td>
+                                    <td style="border:1px solid black !important;background-color:#ff9800;width:15% !important;font-weight:bold;vertical-align:middle" class="text-center">PART NO</td>
+                                    <td style="border:1px solid black !important;background-color:#ff9800;width:50% !important;font-weight:bold;vertical-align:middle" class="text-center">PRODUCT DESCRIPTION</td>
+                                    <td style="border:1px solid black !important;background-color:#ff9800;width:15% !important;font-weight:bold;vertical-align:middle" class="text-center">BATCH / SERIAL NO</td>
+                                    <td colspan='2' style="border:1px solid black !important;background-color:#ff9800;width:10% !important;font-weight:bold;vertical-align:middle" class="text-center">QUANTITY</td>
+                                </tr>
+                            </thead>
+                            <tr>
+                                <t t-set="sno" t-value="1" />
+                                <t t-foreach="doc.move_line_ids_without_package" t-as="l">
+                                    <tr>
+                                        <td style="border:1px solid black !important;vertical-align:middle" class="text-right">
+                                            <span t-esc="sno" />
+                                        </td>
+                                        <!-- <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.partner_id.name"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.picking_id.name"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-esc="l.date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></td> -->
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.product_id.default_code"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.product_id.name"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.lot_id.name"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right"><span t-field="l.qty_done"/></td>
+                                        <t t-set="sno" t-value="sno+1" />
+                                    </tr>
+                                </t>
+                            </tr>
+                            <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                <tr>
+                                    <td colspan='5' style="border: 1px solid black !important;vertical-align:middle;">
+                                        <b>PRICES &amp; DELIVERY TERMS : <t t-esc="doc.sale_id.delivery_term_id.name"/> <t t-esc="doc.sale_id.delivery_location"/></b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan='5' style="border: 1px solid black !important;vertical-align:middle;">
+                                        <b>PACKING DETAILS : <span t-field='doc.sale_id.packing_terms'/></b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan='5' style="border: 1px solid black !important;vertical-align:middle;">
+                                        <b>DELIVERY INSTUCTIONS : <span t-field='doc.sale_id.delivery_remarks'/></b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan='5' style="border: 1px solid black !important;vertical-align:middle;">
+                                        <b>OTHER TERMS : <span t-field='doc.sale_id.note'/></b>
+                                    </td>
+                                </tr>
+                            </t>
+                        </table>
+                        <!-- <table class="table table-borderless table-sm" style="border:1px solid black;page-break-inside: avoid;">
+                            <tr>
+                                <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                    <td style="width:20% important">
+                                    </td>
+                                    <td style="width:20% important">
+                                        <img t-if="company.company_seal" t-att-src="'data:image/png;base64,%s' % to_text(company.company_seal)" style="height: 250px" />
+                                    </td>
+                                    <td style="width:20% important" class="text-center">
+                                    </td>
+                                    <td style="width:20% important" class="text-center">
+                                    </td>
+                                    <td style="color:white;width:20% important">ACC GULF</td>
+                                </t>
+                                <t t-else="">
+                                    <td style="width:40% important">
+                                        <img t-if="company.company_seal" t-att-src="'data:image/png;base64,%s' % to_text(company.company_seal)" style="height: 250px" />
+                                    </td>
+                                    <td style="width:30% important" class="text-center">
+                                    </td>
+                                    <td style="width:30% important" class="text-center">
+                                    </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                    <td style="width:20% important">
+                                        <t t-if="doc.sale_id.user_id.sign">
+                                            <img t-if="doc.sale_id.user_id.sign" t-att-src="'data:image/png;base64,%s' % to_text(doc.sale_id.user_id.sign)" style="height: 120px" />
+                                        </t>
+                                        <t t-else="">
+                                            <b><span t-field="doc.sale_id.user_id.name"/></b>
+                                        </t>
+                                        <br/>
+                                        <span style="border-top:1px solid black">For ACC GULF LLC</span>
+                                    </td>
+                                    <td style="width:20% important;color:white" class="text-center">
+                                        <span>ACC GULF LLC</span>
+                                    </td>
+                                    <td style="width:20% important" class="text-center">
+                                        <t t-if="doc.driver_id.sign">
+                                            <img t-if="doc.driver_id.sign" t-att-src="'data:image/png;base64,%s' % to_text(doc.driver_id.sign)" style="height: 120px" />
+                                        </t>
+                                        <t t-else="">
+                                            <b><span t-field="doc.driver_id.name"/></b>
+                                        </t>
+                                        <br/>
+                                        <span style="border-top:1px solid black">Delivered By</span>
+                                    </td>
+                                    <td style="width:20% important" class="text-center">
+                                        <t t-if="doc.checked_by.sign">
+                                            <img t-if="doc.checked_by.sign" t-att-src="'data:image/png;base64,%s' % to_text(doc.checked_by.sign)" style="height: 120px" />
+                                        </t>
+                                        <t t-else="">
+                                            <b><span t-field="doc.checked_by.name"/></b>
+                                        </t>
+                                        <br/>
+                                        <span style="border-top:1px solid black">Checked By</span>
+                                    </td>
+                                    <td class="text-right" style="color:red;width:20% important">
+                                        <span style="border-top:1px solid black">Goods / Invoice Received By</span>
+                                    </td>
+                                </t>
+                                <t t-else="">
+                                    <td style="width:40% important;color:white" class="text-center">
+                                        <span>ACC GULF LLC</span>
+                                    </td>
+                                    <td style="width:30% important" class="text-center">
+                                        <t t-if="doc.user_id.sign">
+                                            <img t-if="doc.user_id.sign" t-att-src="'data:image/png;base64,%s' % to_text(doc.user_id.sign)" style="height: 120px" />
+                                        </t>
+                                        <t t-else="">
+                                            <b><span t-field="doc.user_id.name"/></b>
+                                        </t>
+                                        <br/>
+                                        <span style="border-top:1px solid black">Prepared By</span>
+                                    </td>
+                                    <td style="width:30% important" class="text-right">
+                                        <br/>
+                                        <span style="border-top:1px solid black">Goods Received By</span>
+                                    </td>
+                                </t>
+                            </tr>
+                        </table>
+                        <table class="table table-borderless table-sm">
+                            <tr>
+                                <td colspan='2' class='text-center'>
+                                    <b>**** This is system generated document no signature required ****</b>
+                                </td>
+                            </tr>
+                        </table> -->
+                    </div>
+                    <div class="footer">
+                        <table class="table table-borderless table-sm" style="page-break-inside: avoid;">
+                            <!-- <tr>
+                                <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                    <td style="width:20% important">
+                                    </td>
+                                    <td style="width:20% important">
+                                        <img t-if="company.company_seal" t-att-src="'data:image/png;base64,%s' % to_text(company.company_seal)" style="height: 250px" />
+                                    </td>
+                                    <td style="width:20% important" class="text-center">
+                                    </td>
+                                    <td style="width:20% important" class="text-center">
+                                    </td>
+                                    <td style="color:white;width:20% important">ACC GULF</td>
+                                </t>
+                                <t t-else="">
+                                    <td style="width:40% important">
+                                        <img t-if="company.company_seal" t-att-src="'data:image/png;base64,%s' % to_text(company.company_seal)" style="height: 250px" />
+                                    </td>
+                                    <td style="width:30% important" class="text-center">
+                                    </td>
+                                    <td style="width:30% important" class="text-center">
+                                    </td>
+                                </t>
+                            </tr> -->
+                            <tr>
+                                <t t-if="doc.picking_type_code in ('outgoing','internal')">
+                                    <td style="width:20% important;vertical-align:bottom">
+                                        <t t-if="doc.sale_id.user_id.sign">
+                                            <img t-if="doc.sale_id.user_id.sign" t-att-src="'data:image/png;base64,%s' % to_text(doc.sale_id.user_id.sign)" style="height: 120px" />
+                                        </t>
+                                        <t t-else="">
+                                            <b><span t-field="doc.sale_id.user_id.name"/></b>
+                                        </t>
+                                        <br/>
+                                        <span style="border-top:1px solid black">For ACC GULF LLC</span>
+                                    </td>
+                                    <td style="width:20% important" class="text-center">
+                                        <img t-if="company.company_seal" t-att-src="'data:image/png;base64,%s' % to_text(company.company_seal)" style="height: 200px" />
+                                    </td>
+                                    <!-- <td style="width:20% important;color:white" class="text-center">
+                                        <span>ACC GULF LLC</span>
+                                    </td> -->
+                                    <td style="width:20% important;vertical-align:bottom" class="text-center">
+                                        <t t-if="doc.driver_id.sign">
+                                            <img t-if="doc.driver_id.sign" t-att-src="'data:image/png;base64,%s' % to_text(doc.driver_id.sign)" style="height: 120px" />
+                                        </t>
+                                        <t t-else="">
+                                            <b><span t-field="doc.driver_id.name"/></b>
+                                        </t>
+                                        <br/>
+                                        <span style="border-top:1px solid black">Delivered By</span>
+                                    </td>
+                                    <td style="width:20% important;vertical-align:bottom" class="text-center">
+                                        <t t-if="doc.checked_by.sign">
+                                            <img t-if="doc.checked_by.sign" t-att-src="'data:image/png;base64,%s' % to_text(doc.checked_by.sign)" style="height: 120px" />
+                                        </t>
+                                        <t t-else="">
+                                            <b><span t-field="doc.checked_by.name"/></b>
+                                        </t>
+                                        <br/>
+                                        <span style="border-top:1px solid black">Checked By</span>
+                                    </td>
+                                    <td class="text-right" style="color:red;width:20% important;vertical-align:bottom">
+                                        <span t-field="doc.partner_id.name" style="color:white"/>
+                                        <br/>
+                                        <span style="border-top:1px solid black">Goods / Invoice Received By</span>
+                                    </td>
+                                </t>
+                                <t t-else="">
+                                    <!-- <td style="width:40% important;color:white" class="text-center">
+                                        <span>ACC GULF LLC</span>
+                                    </td> -->
+                                    <td style="width:30% important;vertical-align:bottom">
+                                        <t t-if="doc.user_id.sign">
+                                            <img t-if="doc.user_id.sign" t-att-src="'data:image/png;base64,%s' % to_text(doc.user_id.sign)" style="height: 120px" />
+                                        </t>
+                                        <t t-else="">
+                                            <b><span t-field="doc.user_id.name"/></b>
+                                        </t>
+                                        <br/>
+                                        <span style="border-top:1px solid black">Prepared By</span>
+                                    </td>
+                                    <td style="width:40% important" class="text-center">
+                                        <img t-if="company.company_seal" t-att-src="'data:image/png;base64,%s' % to_text(company.company_seal)" style="height: 200px" />
+                                    </td>
+                                    <td style="width:30% important;vertical-align:bottom" class="text-right">
+                                        <br/>
+                                        <span style="border-top:1px solid black">Goods Received By</span>
+                                    </td>
+                                </t>
+                            </tr>
+                        </table>
+                        <table class="table table-borderless table-sm">
+                            <tr>
+                                <td colspan='2' class='text-center'>
+                                    <b>**** This is system generated document no signature required ****</b>
+                                </td>
+                            </tr>
+                        </table>
+                        <table style="width:100% !important">
+                            <tr>
+                                <td class="text-center" colspan='2' style="border-top:1px solid black">
+                                    <img t-if="company.brand_footer" t-att-src="'data:image/png;base64,%s' % to_text(company.brand_footer)" style="height: 100px;width:1300px" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

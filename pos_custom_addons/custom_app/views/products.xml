@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="products" name="Products">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <!-- ***** Main Banner Area Start ***** -->
+                <div class="page-heading" id="top">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="inner-content">
+                                    <h2>Check Our Products</h2>
+                                    <span>Awesome &amp; Creative HTML CSS layout by TemplateMo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ***** Main Banner Area End ***** -->
+
+
+                <!-- ***** Products Area Starts ***** -->
+                <section class="section" id="products">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="section-heading">
+                                    <h2>Our Latest Products</h2>
+                                    <span>Check out all of our products.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <t t-foreach="new_arrivals" t-as="new_arrival">
+                                <div class="col-lg-4 col-sm-6 col-xs-12">
+                                    <div class="item">
+                                        <div class="thumb products-thumb">
+                                            <div class="hover-content">
+                                                <ul>
+                                                    <li>
+                                                        <a t-attf-href="/product-view/#{new_arrival.id}">
+                                                            <i class="fa fa-eye"></i>
+                                                        </a>
+                                                    </li>
+                                                    <!--<li>
+                                                        <a href="single-product.html">
+                                                            <i class="fa fa-star"></i>
+                                                        </a>
+                                                    </li>-->
+                                                    <li>
+                                                        <a t-attf-href="/product-view/#{new_arrival.id}">
+                                                            <i class="fa fa-shopping-cart"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <img t-attf-src="/web/image?model=product.template&amp;field=image_1024&amp;id=#{new_arrival.id}"
+                                                 alt=""/>
+                                        </div>
+                                        <div class="down-content">
+                                            <h4>
+                                                <t t-if="new_arrival" t-esc="new_arrival.name"/>
+                                            </h4>
+                                            <span>
+                                                <span class="currency_symbol" t-field="new_arrival.currency_id.symbol" />
+                                                <t t-if="new_arrival" t-esc="new_arrival.list_price"  t-options="{'widget': 'float', 'precision': 2}"/>
+                                            </span>
+                                            <!--<ul class="stars">
+                                                <li>
+                                                    <i class="fa fa-star"></i>
+                                                </li>
+                                                <li>
+                                                    <i class="fa fa-star"></i>
+                                                </li>
+                                                <li>
+                                                    <i class="fa fa-star"></i>
+                                                </li>
+                                                <li>
+                                                    <i class="fa fa-star"></i>
+                                                </li>
+                                                <li>
+                                                    <i class="fa fa-star"></i>
+                                                </li>
+                                            </ul>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                            <!--<div class="col-lg-4">
+                                <div class="item">
+                                    <div class="thumb">
+                                        <div class="hover-content">
+                                            <ul>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-star"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <img src="/theme_home/static/src/img/men-02.jpg" alt=""/>
+                                    </div>
+                                    <div class="down-content">
+                                        <h4>Air Force 1 X</h4>
+                                        <span>$90.00</span>
+                                        <ul class="stars">
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="item">
+                                    <div class="thumb">
+                                        <div class="hover-content">
+                                            <ul>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-star"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <img src="/theme_home/static/src/img/men-03.jpg" alt=""/>
+                                    </div>
+                                    <div class="down-content">
+                                        <h4>Love Nana ‘20</h4>
+                                        <span>$150.00</span>
+                                        <ul class="stars">
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="item">
+                                    <div class="thumb">
+                                        <div class="hover-content">
+                                            <ul>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-star"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <img src="/theme_home/static/src/img/women-01.jpg" alt=""/>
+                                    </div>
+                                    <div class="down-content">
+                                        <h4>New Green Jacket</h4>
+                                        <span>$75.00</span>
+                                        <ul class="stars">
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="item">
+                                    <div class="thumb">
+                                        <div class="hover-content">
+                                            <ul>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-star"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <img src="/theme_home/static/src/img/women-02.jpg" alt=""/>
+                                    </div>
+                                    <div class="down-content">
+                                        <h4>Classic Dress</h4>
+                                        <span>$45.00</span>
+                                        <ul class="stars">
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="item">
+                                    <div class="thumb">
+                                        <div class="hover-content">
+                                            <ul>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-star"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <img src="/theme_home/static/src/img/women-03.jpg" alt=""/>
+                                    </div>
+                                    <div class="down-content">
+                                        <h4>Spring Collection</h4>
+                                        <span>$130.00</span>
+                                        <ul class="stars">
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="item">
+                                    <div class="thumb">
+                                        <div class="hover-content">
+                                            <ul>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-star"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <img src="/theme_home/static/src/img/kid-01.jpg" alt=""/>
+                                    </div>
+                                    <div class="down-content">
+                                        <h4>School Collection</h4>
+                                        <span>$80.00</span>
+                                        <ul class="stars">
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="item">
+                                    <div class="thumb">
+                                        <div class="hover-content">
+                                            <ul>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-star"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <img src="/theme_home/static/src/img/kid-02.jpg" alt=""/>
+                                    </div>
+                                    <div class="down-content">
+                                        <h4>Summer Cap</h4>
+                                        <span>$12.00</span>
+                                        <ul class="stars">
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="item">
+                                    <div class="thumb">
+                                        <div class="hover-content">
+                                            <ul>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-star"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="single-product.html">
+                                                        <i class="fa fa-shopping-cart"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <img src="/theme_home/static/src/img/kid-03.jpg" alt=""/>
+                                    </div>
+                                    <div class="down-content">
+                                        <h4>Classic Kid</h4>
+                                        <span>$30.00</span>
+                                        <ul class="stars">
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                            <li>
+                                                <i class="fa fa-star"></i>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>-->
+                            <div class="col-lg-12">
+
+                                <div class="products_pager form-inline justify-content-center mt-3 pagination">
+                                    <t t-call="website.pager">
+                                        <t t-set="_classes">mt-2 ml-md-2</t>
+                                    </t>
+                                </div>
+                                <!--                                    <ul>-->
+                                <!--                                        <li>-->
+                                <!--                                            <a href="#">1</a>-->
+                                <!--                                        </li>-->
+                                <!--                                        <li class="active">-->
+                                <!--                                            <a href="#">2</a>-->
+                                <!--                                        </li>-->
+                                <!--                                        <li>-->
+                                <!--                                            <a href="#">3</a>-->
+                                <!--                                        </li>-->
+                                <!--                                        <li>-->
+                                <!--                                            <a href="#">4</a>-->
+                                <!--                                        </li>-->
+                                <!--                                        <li>-->
+                                <!--                                            <a href="#">></a>-->
+                                <!--                                        </li>-->
+                                <!--                                    </ul>-->
+
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+                <!-- ***** Products Area Ends ***** -->
+            </div>
+        </t>
+    </template>
+</odoo>

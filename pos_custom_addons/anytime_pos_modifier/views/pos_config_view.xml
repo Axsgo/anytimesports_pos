@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="pos_config_inherit_form_view_anytime" model="ir.ui.view">
+        <field name="name">pos.config.inherit.form.anytime</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='auto_printing']" position="before">
+                <div class="col-12 col-lg-6 o_setting_box" id="receipt_image">
+                    <div class="o_setting_left_pane">
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="receipt_qr_image"/>
+                        <div class="text-muted">
+                            QR Code to be printed on the receipt
+                        </div>
+                        <div class="content-group mt16">
+                            <field name="receipt_qr_image" filename="qr_image_filename" widget="image"/>
+                            <field name="qr_image_filename" invisible="1"/>
+                        </div>
+
+                        <label for="receipt_qr_content"/>
+                        <div class="text-muted">
+                            Content to be printed along with QR Code
+                        </div>
+                        <div class="content-group mt16">
+                            <field name="receipt_qr_content"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

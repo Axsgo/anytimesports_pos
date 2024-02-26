@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="product-view" name="Product View">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure">
+                <!-- ***** Main Banner Area Start ***** -->
+                <div class="page-heading" id="top">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="inner-content">
+                                    <h2>Single Product Page</h2>
+                                    <span>Awesome &amp; Creative HTML CSS layout by TemplateMo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ***** Main Banner Area End ***** -->
+                <!-- ***** Product Area Starts ***** -->
+                <section class="section" id="product">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="left-images">
+                                    <img t-attf-src="/web/image?model=product.template&amp;field=image_1024&amp;id=#{pr_details.id}"
+                                         alt=""/>
+                                    <img t-attf-src="/web/image?model=product.template&amp;field=image_1024&amp;id=#{pr_details.id}"
+                                         alt=""/>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="right-content">
+                                    <h4>
+                                        <t t-if="pr_details" t-esc="pr_details.name"/>
+                                    </h4>
+                                    <span class="price">
+                                        <t t-if="pr_details" t-esc="pr_details.list_price" t-options="{'widget': 'float', 'precision': 2}"/>
+                                    </span>
+                                    <span>
+                                        <t t-if="pr_details" t-esc="pr_details.description"/>
+                                    </span>
+                                    <div class="quote">
+                                    </div>
+                                    <form action="/shop/cart/update" method="POST">
+                                        <div class="quantity-content">
+                                            <div class="left-content">
+                                                <h6>No. of Orders</h6>
+                                            </div>
+                                            <div class="right-content">
+                                                <div class="quantity buttons_added">
+                                                    <input type="button" value="-" class="minus"/>
+                                                    <input type="number" step="1" min="1" max="" name="add_qty"
+                                                           value="1"
+                                                           title="Qty" class="input-text qty text" size="4" pattern=""
+                                                           inputmode=""/>
+                                                    <input type="button" value="+" class="plus"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="total">
+                                            <h4>Total:
+                                                <t t-if="pr_details" t-esc="pr_details.list_price"  t-options="{'widget': 'float', 'precision': 2}" />
+                                                <!--<span class="" t-field="pr_details.currency_id.symbol" />-->
+                                            </h4>
+                                            <div class="main-border-button">
+                                                <form action="/shop/cart/update" method="POST">
+                                                    <input type="hidden" name="csrf_token"
+                                                           t-att-value="request.csrf_token()"/>
+                                                    <input type="hidden" class="product_template_id"
+                                                           name="product_template_id"
+                                                           t-att-value="pr_details.product_tmpl_id.id"/>
+                                                    <input type="hidden" class="product_id"
+                                                           name="product_id" t-att-value="pr_details.id"/>
+                                                    <div >
+                                                        <input type="submit" value="Add to Cart"
+                                                               class="btn btn-border btn-lg mt16 js_check_product a-submit d-block d-sm-inline-block"/>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- ***** Product Area Ends ***** -->
+            </div>
+        </t>
+    </template>
+</odoo>

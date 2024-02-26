@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t t-name="ProductTaxPrice" t-inherit="point_of_sale.ProductItem" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('product-img')]/img" position="after">
+            <span class="product-qty"><t t-esc="props.product.qty_available"/></span>
+        </xpath>
+    </t>
+</templates>

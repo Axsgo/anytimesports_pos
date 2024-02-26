@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<!-- Form view -->
+        <record id="acc_location_master_form_view" model="ir.ui.view">
+            <field name="name">Location</field>
+            <field name="model">acc.location</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+				<form string="Location">
+					<!-- <header>
+						<button name = "entry_approve" type = "object" string = "Approve" states = "draft" class = "oe_highlight"/>
+						<button name = "entry_draft" type = "object" string = "Set to Draft" states = "approved"/>
+						<button name = "entry_cancel" type = "object" string = "Cancel" states = "draft"/>
+						<field name="state" widget="statusbar"/>
+					</header> -->
+					<sheet> 
+						<group> 
+							<group>
+								<field name="name" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="company_id" required='0' attrs="{'readonly':[('state','!=','draft')]}" options="{'no_create': True, 'no_create_edit':True}" groups="base.group_multi_company"/>
+							</group>
+							<group>
+								<field name="code" required='1' attrs="{'readonly':[('state','!=','draft')]}"/>
+								<field name="notes" required='0' attrs="{'readonly':[('state','!=','draft')]}"/>
+							</group>
+						</group>
+						<notebook>
+							<page string = "Entry Info">
+								<group>
+									<group>
+										<field name = "user_id"/>
+										<field name = "update_user_id"/>
+										<field name = "ap_rej_user_id"  attrs = "{'invisible':[('state','=','draft')]}"/>
+										<field name = "cancel_user_id"  attrs = "{'invisible':[('state','!=','cancel')]}"/>
+									</group>
+									<group>
+										<field name = "crt_date"/>
+										<field name = "update_date"/>
+										<field name = "ap_rej_date"  attrs = "{'invisible':[('state','=','draft')]}"/>
+										<field name = "cancel_date"  attrs = "{'invisible':[('state','!=','cancel')]}"/>
+									</group>
+								</group>
+							</page>		
+						</notebook>
+					</sheet>
+				</form>
+            </field>
+        </record>
+        <!-- Tree View -->
+        <record id="acc_location_master_tree_view" model="ir.ui.view">
+            <field name="name">Location Master</field>
+            <field name="model">acc.location</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+             <tree string="Location"  
+				decoration-info = "state == 'draft'" decoration-bf = "state == 'approved'" default_order = "crt_date desc"> 
+				<field name="crt_date"/>
+				<field name="user_id"/>
+				<field name="name" />
+				<field name="code"/>
+				<field name="company_id" groups="base.group_multi_company"/>
+				<field name="state"/>  			 
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search View Start -->
+	
+	<record id="acc_location_master_search_view" model="ir.ui.view">
+		<field name="name">Location Master</field>
+		<field name="model">acc.location</field>
+		<field name="arch" type="xml">
+			<search string="Location">
+				<field name="name" string="Name"  filter_domain="[('name','ilike',self)]" />
+				<filter name="draft" string="Draft" domain="[('state','=','draft')]"/>
+				<filter name="approved" string="Approved" domain="[('state','=','approved')]"/>				
+				<filter name="cancel" string="Cancelled" domain="[('state','=','cancel')]"/>
+				<group expand="0" string="Group By...">
+					<filter name="crt_date" string="Creation Date" domain="[]" context="{'group_by':'crt_date'}"/> 
+					<filter name="user_id" string="Created By" domain="[]" context="{'group_by':'user_id'}"/>
+					<filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+				</group>
+			</search>
+		</field>
+	</record>
+	
+	<!-- Search View End -->
+
+        <record id="action_acc_location_master" model="ir.actions.act_window">  
+            <field name="name">Location</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">acc.location</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="acc_location_master_tree_view"></field>
+            <field name="search_view_id" ref="acc_location_master_search_view"/>
+        </record>
+
+        <!-- Menuitems -->
+        <menuitem name="Masters" id="tpm_masters" sequence='0'/>
+    	<menuitem name="Location" id="pm_acc_location" parent="tpm_masters" action="action_acc_location_master" sequence='0'/>
+
+        <!-- Record Rule -->
+    	<record id="rule_acc_location_master" model="ir.rule">
+            <field name="name">Location multi-company</field>
+            <field name="model_id" ref="model_acc_location"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id','in',company_ids)]</field>
+        </record>         
+            
+    </data>
+</openerp>

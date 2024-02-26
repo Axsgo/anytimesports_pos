@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+    	<!-- ************************************ Source of Enquiry ************************************************* -->
+    	<record id="Email" model="acc.source.enquiry">
+            <field name="name">Email</field>
+            <field name="code">Email</field>
+        </record>
+        <record id="Landline" model="acc.source.enquiry">
+            <field name="name">Landline</field>
+            <field name="code">Landline</field>
+        </record>
+        <record id="Whatsapp" model="acc.source.enquiry">
+            <field name="name">Whatsapp</field>
+            <field name="code">Whatsapp</field>
+        </record>
+        <record id="Employee_ref" model="acc.source.enquiry">
+            <field name="name">Employee Reference</field>
+            <field name="code">Employee Reference</field>
+        </record>
+        <record id="Ex_customer" model="acc.source.enquiry">
+            <field name="name">Existing Customer</field>
+            <field name="code">Existing Customer</field>
+        </record>
+        <record id="Client_ref" model="acc.source.enquiry">
+            <field name="name">Client Reference</field>
+            <field name="code">Client Reference</field>
+        </record>
+        <record id="Other" model="acc.source.enquiry">
+            <field name="name">Others</field>
+            <field name="code">Others</field>
+        </record>
+
+        <!-- ************************************ Expected Delivery Period ************************************************* -->
+        <record id="1week" model="acc.delivery.period">
+            <field name="name">1 Week</field>
+            <field name="code">7</field>
+        </record>
+        <record id="2week" model="acc.delivery.period">
+            <field name="name">2 Weeks</field>
+            <field name="code">14</field>
+        </record>
+        <record id="3week" model="acc.delivery.period">
+            <field name="name">3 Weeks</field>
+            <field name="code">21</field>
+        </record>
+        <record id="4week" model="acc.delivery.period">
+            <field name="name">4 Weeks</field>
+            <field name="code">28</field>
+        </record>
+        <record id="5week" model="acc.delivery.period">
+            <field name="name">5 Weeks</field>
+            <field name="code">35</field>
+        </record>
+        <record id="6week" model="acc.delivery.period">
+            <field name="name">6 Weeks</field>
+            <field name="code">42</field>
+        </record>
+        <record id="7week" model="acc.delivery.period">
+            <field name="name">7 Weeks</field>
+            <field name="code">49</field>
+        </record>
+        <record id="8week" model="acc.delivery.period">
+            <field name="name">8 Weeks</field>
+            <field name="code">56</field>
+        </record>
+        <record id="9week" model="acc.delivery.period">
+            <field name="name">9 Weeks</field>
+            <field name="code">63</field>
+        </record>
+        <record id="10week" model="acc.delivery.period">
+            <field name="name">10 Weeks</field>
+            <field name="code">70</field>
+        </record>
+
+        <!-- ************************************ Stock Availability Period ************************************************* -->
+        <record id="ex_stock" model="acc.availability.period">
+            <field name="name">Ex-Stock | Subject to Previous Sale</field>
+            <field name="code">0</field>
+        </record>
+        <record id="1week" model="acc.availability.period">
+            <field name="name">1 Week</field>
+            <field name="code">7</field>
+        </record>
+        <record id="2week" model="acc.availability.period">
+            <field name="name">2 Weeks</field>
+            <field name="code">14</field>
+        </record>
+        <record id="3week" model="acc.availability.period">
+            <field name="name">3 Weeks</field>
+            <field name="code">21</field>
+        </record>
+        <record id="4week" model="acc.availability.period">
+            <field name="name">4 Weeks</field>
+            <field name="code">28</field>
+        </record>
+        <record id="5week" model="acc.availability.period">
+            <field name="name">5 Weeks</field>
+            <field name="code">35</field>
+        </record>
+        <record id="6week" model="acc.availability.period">
+            <field name="name">6 Weeks</field>
+            <field name="code">42</field>
+        </record>
+        <record id="7week" model="acc.availability.period">
+            <field name="name">7 Weeks</field>
+            <field name="code">49</field>
+        </record>
+        <record id="8week" model="acc.availability.period">
+            <field name="name">8 Weeks</field>
+            <field name="code">56</field>
+        </record>
+        <record id="9week" model="acc.availability.period">
+            <field name="name">9 Weeks</field>
+            <field name="code">63</field>
+        </record>
+        <record id="10week" model="acc.availability.period">
+            <field name="name">10 Weeks</field>
+            <field name="code">70</field>
+        </record>
+
+        <!-- ************************************ Payment Terms ************************************************* -->
+        <record id="coa" model="account.payment.term">
+            <field name="name">Cash on Advance</field>
+            <field name="note">Payment terms: Cash on Advance</field>
+        </record>
+        <record id="cod" model="account.payment.term">
+            <field name="name">Cash on Delivery</field>
+            <field name="note">Payment terms: Cash on Delivery</field>
+        </record>
+        <record id="30days" model="account.payment.term">
+            <field name="name">30 Days</field>
+            <field name="note">Payment terms: 30 Days</field>
+        </record>
+        <record id="60days" model="account.payment.term">
+            <field name="name">60 Days</field>
+            <field name="note">Payment terms: 60 Days</field>
+        </record>
+        <record id="90days" model="account.payment.term">
+            <field name="name">90 Days</field>
+            <field name="note">Payment terms: 90 Days</field>
+        </record>
+
+        <!-- ************************************ Delivery Terms ************************************************* -->
+        <record id="ex_work" model="acc.delivery.term">
+            <field name="name">Ex-Works, Dubai.</field>
+            <field name="note">Delivery terms: Ex-Works, Dubai.</field>
+        </record>
+        <record id="free_del_dubai" model="acc.delivery.term">
+            <field name="name">Free Delivery in Dubai.</field>
+            <field name="note">Delivery terms: Free Delivery in Dubai.</field>
+        </record>
+        <record id="free_del_uae" model="acc.delivery.term">
+            <field name="name">Free Delivery in UAE.</field>
+            <field name="note">Delivery terms: Free Delivery in UAE.</field>
+        </record>
+        <record id="candf" model="acc.delivery.term">
+            <field name="name">C&amp;F</field>
+            <field name="note">Delivery terms: C&amp;F</field>
+            <field name='is_add_location'>True</field>
+        </record>
+
+        <!-- ************************************ Quotation Validity Period ************************************************* -->
+        <record id="7_days" model="acc.quote.validity">
+            <field name="name">7 Days</field>
+            <field name="code">7</field>
+        </record>
+        <record id="14_days" model="acc.quote.validity">
+            <field name="name">14 Days</field>
+            <field name="code">14</field>
+        </record>
+        <record id="30_days" model="acc.quote.validity">
+            <field name="name">30 Days</field>
+            <field name="code">30</field>
+        </record>
+    </data>
+</odoo>

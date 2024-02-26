@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="product_profit_report_view" model="ir.ui.view">
+		<field name="name">product.profit.report</field>
+		<field name="model">product.profit.report</field>
+		<field name="arch" type="xml">
+			<form>
+				<script>
+                    $(document).ready(function(){
+                       $('.modal-lg').css({'max-width': '1200px'});
+                    });
+        		</script>
+				<group>
+					<group>
+						<field name="from_date" required='1' />
+						<field name="company_id" readonly='1' options="{'no_create': True, 'no_create_edit':True}" groups="base.group_multi_company"/>
+					</group>
+					<group>
+						<field name="to_date" required='1' />
+						<field name="crt_date" readonly="1"/>
+					</group>
+				</group>
+				<!-- <button name="compute_reports_all"
+	                            type="object" string="Generate Details"
+	                            class="oe_highlight"/> -->
+				<group string ="Report Details" invisible="1">
+					<field name="report_product_profit_detail_ids" nolabel='1' readonly="1">
+						<tree edit='false' delete="false" create='false' >
+							<field name='categ_id' />
+							<field name='qty_sold'/>
+							<field name='sales'/>
+							<field name='cost' />
+							<field name='profit'/>
+							<field name='margin'/>
+							<field name='is_parent'/>
+						</tree>
+					</field>
+		       </group>
+		       <group string ="Product Details" invisible="1">
+					<field name="report_product_wise_detail_ids" nolabel='1' readonly="1">
+						<tree edit='false' delete="false" create='false' >
+							<field name="code"/>
+							<field name='name' />
+							<field name='qty_sold'/>
+							<field name='sales'/>
+							<field name='cost' />
+							<field name='profit'/>
+							<field name='margin'/>
+							<field name='is_parent'/>
+						</tree>
+					</field>
+		       </group>
+				<footer>
+					<button name="print_report_values"
+	                            type="object" string="Print PDF"
+	                            class="oe_highlight"/>
+					or					
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_product_profit_report" model="ir.actions.act_window">
+		<field name="name">Product Profit Detailed Report</field>
+		<field name="res_model">product.profit.report</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="product_profit_report_view"/>
+		<field name="target">new</field>
+	</record>
+
+	<menuitem id="menu_product_profit_report"
+                  name="Product Profit Detailed Report"
+                  action="action_product_profit_report"
+                  parent="stock.menu_warehouse_report"
+                  sequence="11"
+                  />
+</odoo>

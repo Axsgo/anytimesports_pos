@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="acc_consignment_report_form_view" model="ir.ui.view">
+        <field name="name">Consignment Stock Report</field>
+        <field name="model">acc.consignment.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <script>
+                    $(document).ready(function(){
+                       $('.modal-lg').css({'max-width': '1500px'});
+                    });
+                </script>
+                <group>
+                    <group>
+                        <field name="from_date" required='1'/>
+                        <field name="partner_id" required='0' domain="[('customer_rank','&gt;', 0),('is_company','=',True)]" options="{'no_create': True, 'no_create_edit':True}"/>
+                        <!-- <field name="state"/> -->
+                        <field name="sale_id" required='0' domain="[('is_consignment','=',True)]" options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="company_id" required='1' options="{'no_create': True, 'no_create_edit':True}" groups="base.group_multi_company"/>
+                    </group>
+                    <group>
+                        <field name="to_date" required='1'/>
+                        <field name="user_id" required='0' domain="[('company_id','=',company_id)]" options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="product_id" required='0' options="{'no_create': True, 'no_create_edit':True}"/>
+                        <field name="currency_id" invisible='1'/>
+                    </group>
+                </group>
+                <group>
+                    <field name="report_ids" readonly='1' nolabel='1'>
+                        <tree>
+                            <field name="sale_id" width='0.5'/>
+                            <field name="partner_id" width='0.7'/>
+                            <field name="picking_id" width='0.7'/>
+                            <field name="product_id"/>
+                            <field name="date" width='0.7'/>
+                            <field name="user_id" width='1.0'/>
+                            <field name="order_qty" width='0.7' sum="Total Orded Qty"/>
+                            <field name="qty" width='0.7' sum="Total Delivered Qty"/>
+                            <field name="used_qty" width='0.7' sum="Total Used Qty"/>
+                            <field name="bal_qty" width='0.7' sum="Total Balance Qty"/>
+                            <!-- <field name="employee_id"/>
+                            <field name="pick_date"/> -->
+                            <field name="company_id" invisible='1'/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                     <button name="print_report_values"
+                                type="object" string="Print PDF"
+                                class="oe_highlight"/>  
+                                or                  
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_acc_consignment_report" model="ir.actions.act_window">
+        <field name="name">Consignment Report</field>
+        <field name="res_model">acc.consignment.report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="acc_consignment_report_form_view"/>
+        <field name="target">new</field>
+    </record>
+
+     <menuitem
+            id="tpm_acc_consignment_report"
+            name="Consignment Stock Report"
+            action="action_acc_consignment_report"
+            parent="stock.menu_warehouse_report"
+            sequence="0"/>
+</odoo>

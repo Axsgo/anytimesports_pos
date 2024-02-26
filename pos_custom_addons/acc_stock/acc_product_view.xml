@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <!-- Product Category Form view -->
+        <record id="acc_product_category_form_view" model="ir.ui.view">
+            <field name="name">Product Category</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+                    <field name="seq_id" invisible='1'/>
+                    <label for="code" attrs="{'invisible':[('parent_id','!=',False)]}"/>
+                    <div class='o_row' attrs="{'invisible':[('parent_id','!=',False)]}" style="width:22% !important">
+                        <field name="code" attrs="{'readonly':[('seq_id','!=',False)]}"/>
+                        <button name="entry_create_seq" string="Create PO Sequence" type='object' class='oe_highlight' attrs="{'invisible':[('seq_id','!=',False)]}"/>
+                    </div>
+                    <label for="nrml_sale_margin" attrs="{'invisible':[('parent_id','=',False)]}"/>
+                    <div class='o_row' style="width:22% !important" attrs="{'invisible':[('parent_id','=',False)]}">
+                        <field name="nrml_sale_margin"/>
+                        <field name="show_nrml_sale_margin" invisible='1'/>
+                        <button name="update_nrml_sale_margin" string="Update" type='object' class='oe_highlight' attrs="{'invisible':[('show_nrml_sale_margin','=',False)]}"/>
+                    </div>
+                    <!-- <label for="direct_sale_margin"/>
+                    <div class='o_row' style="width:22% !important">
+                        <field name="direct_sale_margin"/>
+                        <field name="show_direct_sale_margin" invisible='1'/>
+                        <button name="update_direct_sale_margin" string="Update" type='object' class='oe_highlight' attrs="{'invisible':[('show_direct_sale_margin','=',False)]}"/>
+                    </div> -->
+                    <!-- <label for="min_margin"/>
+                    <div class='o_row' style="width:22% !important">
+                        <field name="min_margin"/>
+                        <field name="show_min_margin" invisible='1'/>
+                        <button name="update_min_margin" string="Update" type='object' class='oe_highlight' attrs="{'invisible':[('show_min_margin','=',False)]}"/>
+                    </div> -->
+                    <!-- <field name="nrml_sale_margin" class="oe_inline"/> -->
+                    <!-- <field name="direct_sale_margin" class="oe_inline" attrs="{'invisible':[('parent_id','=',False)]}"/> -->
+                    <field name="trade_margin" class="oe_inline" attrs="{'invisible':[('parent_id','=',False)]}"/>
+                    <field name="enduser_margin" class="oe_inline" attrs="{'invisible':[('parent_id','=',False)]}"/>
+                    <field name="min_margin" class="oe_inline" attrs="{'invisible':[('parent_id','=',False)]}"/>
+                    <field name="seq_no"/>
+                    <field name = "employee_ids" widget="many2many_tags" attrs="{'invisible':[('parent_id','!=',False)]}"/>
+                </field>
+                <field name="parent_id" position="attributes">
+                    <attribute name="domain">[('parent_id','=',False)]</attribute>
+                    <attribute name="options">{'no_open':True,'no_create':True}</attribute>
+                </field>
+            </field>
+        </record>
+
+    	<!-- Product Form view -->
+        <record id="acc_product_form_view" model="ir.ui.view">
+            <field name="name">Product</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+            	<field name="categ_id" position="after">
+                    <field name="sub_categ_id" domain="[('categ_id','=',categ_id)]" options="{'no_open':True,'no_create':True}"/>
+                    <field name="pricelist_alert" invisible='1'/>
+                    <field name="parent_categ_id" invisible='1'/>
+                    <field name="hs_code"/>
+                    <field name="supplier_part_no"/>
+                    <field name="old_product_code" readonly='1' force_save='1'/>
+                    <field name='is_supplier_code_updated' invisible='1'/>
+            		<field name="manufacturer_id" attrs="{'required':[('type','=','product')]}" options="{'no_open':True,'no_create':True}"/>
+                    <field name="country_id" attrs="{'required':[('type','=','product')]}" options="{'no_open':True,'no_create':True}"/>
+                    <field name="stock_moving_type"/>
+            	</field>
+                <!-- <field name="default_code" position='attributes'>
+                    <attribute name="required">1</attribute>
+                </field> -->
+                <xpath expr="//form/sheet" position="before"> 
+                    <div class="alert alert-info" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('pricelist_alert', '=', False)]}"><field name="pricelist_alert_msg"/>
+                     </div>
+                </xpath>
+                
+                <field name="categ_id" position="attributes">
+                    <attribute name="string">Brand</attribute>
+                </field>
+            	<field name="categ_id" position="attributes">
+            		<attribute name="options">{'no_open':True,'no_create':True}</attribute>
+            	</field>
+            	<field name="taxes_id" position="attributes">
+            		<attribute name="options">{'no_open':True,'no_create':True}</attribute>
+            	</field>
+            	<field name="uom_id" position="attributes">
+            		<attribute name="options">{'no_create':True}</attribute>
+            	</field>
+            	<field name="uom_po_id" position="attributes">
+            		<attribute name="options">{'no_create':True}</attribute>
+            	</field>
+            	<field name="supplier_taxes_id" position="attributes">
+            		<attribute name="options">{'no_open':True,'no_create':True}</attribute>
+            	</field>
+            	<field name="categ_id" position="attributes">
+            		<attribute name="domain">[('parent_id','!=',False)]</attribute>
+            	</field>
+            </field>
+        </record>
+
+        <record id="acc_product_prodcurement_form_view" model="ir.ui.view">
+            <field name="name">Product</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="stock.product_template_form_view_procurement_button"/>
+            <field name="arch" type="xml">
+                <button name="action_update_quantity_on_hand" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </button>
+                <xpath expr="//header/button[3]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+         <record id="acc_product_template_only_form_view" model="ir.ui.view">
+            <field name="name">Product</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+            	<field name="barcode" position="attributes">
+            		<attribute name="invisible">1</attribute>
+            	</field>
+                <field name="default_code" position="attributes">
+                    <attribute name="string">Product Code</attribute>
+                </field>
+                <field name="default_code" position='attributes'>
+                    <attribute name="required">1</attribute>
+                </field>
+            </field>
+        </record>
+
+        <record id="acc_product_template_tracking_form_view" model="ir.ui.view">
+            <field name="name">Product</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="stock.view_template_property_form"/>
+            <field name="arch" type="xml">
+                <field name="tracking" position="after">
+                    <field name="enable_auto_lot" invisible='1'/>
+                </field>
+            </field>
+        </record>
+
+        <record id="stock.product_template_action_product" model="ir.actions.act_window">
+            <field name="name">Products</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="search_view_id" ref="stock.product_template_search_form_view_stock"/>
+            <field name="context">{'default_type': 'product'}</field>
+            <field name="domain">[('type','in',('product','consu'))]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No product found. Let's create one!
+                </p><p>
+                    Track your stock quantities by creating storable products.
+                </p>
+            </field>
+        </record>
+
+        <record id="acc_product_template_action_service" model="ir.actions.act_window">
+            <field name="name">Service Charges</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.template</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="search_view_id" ref="stock.product_template_search_form_view_stock"/>
+            <field name="context">{'default_type': 'service'}</field>
+            <field name="domain">[('type','=','service')]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No charges found. Let's create one!
+                </p><p>
+                </p>
+            </field>
+        </record>
+
+        <record id="product.product_normal_action_sell" model="ir.actions.act_window">
+            <field name="name">Product Variants</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.product</field>
+            <field name="view_mode">tree,form,kanban,activity</field>
+            <field name="context">{"search_default_filter_to_sell":1}</field>
+            <field name="view_id" ref="product.product_product_tree_view"/>
+            <field name="search_view_id" ref="product.product_search_form_view"/>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new product variant
+              </p><p>
+                You must define a product for everything you sell, whether it's a physical product,
+                a consumable or a service you offer to customers.
+                The product form contains information to simplify the sale process:
+                price, notes in the quotation, accounting data, procurement methods, etc.
+              </p>
+            </field>
+        </record>
+    </data>
+</openerp>

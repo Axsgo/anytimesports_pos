@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Paperformat -->
+    <record id="acc_stock_paperformat"
+        model="report.paperformat">
+        <field name="name">ACC Stock Paperformat</field>
+        <field name="default" eval="True" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">35.00</field>
+        <field name="margin_bottom">15.00</field>
+        <field name="margin_left">4.00</field>
+        <field name="margin_right">4.00</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">30</field>
+        <field name="dpi">120</field>
+    </record>
+
+    <report 
+        id="action_acc_picking_report_pdf"
+        model="acc.picking.report"
+        string="Delivery/GRN Report"
+        report_type="qweb-pdf"
+        name="acc_stock.acc_picking_report_template"
+        file="acc_stock.acc_picking_report_template"
+        paperformat="acc_stock.acc_stock_paperformat"
+        print_report_name="object.get_report_name()"
+        menu="False"
+    />
+
+    <template id="acc_picking_report_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <!-- <t t-call="sale.report_saleorder_document" t-lang="doc.partner_id.lang"/> -->
+                <t t-if="o and 'company_id' in o">
+                    <t t-set="company" t-value="o.company_id"></t>
+                </t>
+                <t t-if="not o or not 'company_id' in o">
+                    <t t-set="company" t-value="res_company"></t>
+                </t>
+                <div class="header">
+                    <table class="table table-sm table-borderless">
+                        <tr style="border-bottom:1px solid black">
+                            <td class='text-center'>
+                                <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)" style="max-height: 120px;" />
+                            </td>
+                            <td colspan='3' class='text-center'>
+                                <strong><span style="font-size:30px;margin-right:200px" t-field="doc.company_id.name"/></strong><br/>
+                                <strong><span style="margin-right:200px">TRN ID: <span t-field="doc.company_id.vat"/></span></strong><br/>
+                                <span style="margin-right:200px"><b>OFFICE:</b> <span  t-field="doc.company_id.street"/>, <span t-field="doc.company_id.street2"/>, <span t-field="doc.company_id.state_id.name"/>, <span t-field="doc.company_id.country_id.name"/>.</span><br/>
+                                <span style="margin-right:200px"><b>WAREHOUSE:</b> <span  t-field="doc.company_id.war_street"/>, <span t-field="doc.company_id.war_street2"/>, <span t-field="doc.company_id.war_state_id.name"/>, <span t-field="doc.company_id.war_country_id.name"/>.</span><br/>
+                                <span style="margin-right:200px">Email: <span t-field="doc.company_id.email"/>, accounts@accgulf.com | <span>Phone: </span><span t-field="doc.company_id.phone"/>.</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <t t-call="web.basic_layout">
+                    <t t-set="doc" t-value="doc.with_context({'lang':zh_CN})" />
+                    <div class="pt-5" style="padding-top:2rem !important"></div>
+                    <div class="page">
+                        
+                        <table class="table table-borderless table-sm">
+                            <tr>
+                                <td colspan='4' style="background-color:#ff9800;border:1px solid black !important;font-weight:bold;vertical-align:middle">
+                                    <h4><center>DELIVERY/GRN REPORT</center></h4>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    From Date:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.from_date" t-options="{&quot;widget&quot;: &quot;date&quot;}" class='text-left'/></b>
+                                </td>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    To Date:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.from_date" t-options="{&quot;widget&quot;: &quot;date&quot;}" class='text-left'/></b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Customer:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.partner_id.name" class='text-left'/></b>
+                                </td>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Salesperson:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.user_id.name" class='text-left'/></b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Status:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.state"/></b>
+                                </td>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Deliver:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><span t-field="doc.driver_id.name"/></b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Company:
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-esc="doc.company_id.name" class='text-left'/></b>
+                                </td>
+                                <td style="width:20%;border: 1px solid black !important;vertical-align:middle">
+                                    Type :
+                                </td>
+                                <td style="width:30%;border: 1px solid black !important;vertical-align:middle">
+                                    <b><t t-if='doc.delivery_type =="delivery"'>
+                                        <span>Delivery Orders</span><br/>
+                                    </t>
+                                    <t t-if='doc.delivery_type =="direct"'>
+                                        <span>Direct Delivery Orders</span><br/>
+                                    </t>
+                                    <t t-if='doc.delivery_type =="grn"'>
+                                        <span>GRN</span><br/>
+                                    </t></b>
+                                </td>
+                            </tr>
+
+                        </table>
+                        <table class="table table-sm table-borderless">
+                            <tr>
+                                <td colspan='9' class='text-right'>All amount in <t t-esc="doc.currency_id.symbol"/></td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:3% !important;font-weight:bold;vertical-align:middle" class="text-center">Sl.No</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:20% !important;font-weight:bold;vertical-align:middle" class="text-center">Customer</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:10% !important;font-weight:bold;vertical-align:middle" class="text-center">Delivery No</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:10% !important;font-weight:bold;vertical-align:middle;vertical-align:middle" class="text-center">Date</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:5% !important;font-weight:bold;vertical-align:middle" class="text-center">Ordered Qty</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:5% !important;font-weight:bold;vertical-align:middle" class="text-center">Delivered Qty</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:15% !important;font-weight:bold;vertical-align:middle" class="text-center">Salesperson</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:15% !important;font-weight:bold;vertical-align:middle" class="text-center">Driver</td>
+                                <td style="border:1px solid black !important;background-color:#ff9800;width:20% !important;font-weight:bold;vertical-align:middle" class="text-center">Picked Datetime</td>
+                            </tr>
+                            <tr>
+                                <t t-set="sno" t-value="1" />
+                                <t t-set="total" t-value='0'/>
+                                <t t-set="total_ord" t-value='0'/>
+                                <t t-foreach="doc.report_ids" t-as="l">
+                                    <tr>
+                                        <td style="border:1px solid black !important;vertical-align:middle" class="text-right">
+                                            <span t-esc="sno" />
+                                        </td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.partner_id.name"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-field="l.picking_id.name"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;"><span t-esc="l.date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right"><span t-field="l.order_qty"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right"><span t-field="l.qty"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right"><span t-field="l.user_id.name"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right"><span t-field="l.driver_id.name"/></td>
+                                        <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right"><span t-esc="l.pick_date" t-options="{&quot;widget&quot;: &quot;date&quot;}"/></td>
+                                        <t t-set="sno" t-value="sno+1" />
+                                        <t t-set="total_ord" t-value='total_ord + l.order_qty'/>
+                                        <t t-set="total" t-value='total + l.qty'/>
+                                    </tr>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td colspan='4' style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                    Total Ordered Qty:
+                                </td>   
+                                <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                    <b><t t-esc='total_ord'/></b>
+                                </td>
+                                <td colspan='3' style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                    Total Delivered Qty:
+                                </td>   
+                                <td style="border: 1px solid black !important;vertical-align:middle;" class="text-right">
+                                    <b><t t-esc='total'/></b>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="footer"></div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

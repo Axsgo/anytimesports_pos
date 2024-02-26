@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<!-- Form view -->
+        <record id="acc_temp_product_form_view" model="ir.ui.view">
+            <field name="name">Temporary Product</field>
+            <field name="model">acc.temp.product</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+				<form string="Temporary Product">
+					<header>
+						<button name = "entry_convert" type = "object" string = "Convert as Permanent Product" class = "oe_highlight" attrs="{'invisible':[('product_id','!=',False)]}"/>
+					</header>
+					<sheet>
+						<group>    
+							<group>
+								<field name="name" required='1' attrs="{'readonly':[('product_id','!=',False)]}"/>
+								<field name="type" required='1' attrs="{'readonly':[('product_id','!=',False)]}"/>
+								<field name="categ_id" required='1' attrs="{'readonly':[('product_id','!=',False)]}"/>
+								<field name="list_price" required='1' attrs="{'readonly':[('product_id','!=',False)]}"/>
+							</group>
+							<group>
+								<field name="default_code" required='1' attrs="{'readonly':[('product_id','!=',False)]}"/>
+								<field name="uom_id" required='1' attrs="{'readonly':[('product_id','!=',False)]}"/>
+								<field name="standard_price" required='1' attrs="{'readonly':[('product_id','!=',False)]}"/>
+								<field name="product_id" invisible='1'/>
+							</group>
+						</group>
+						<notebook>
+							<page string = "Entry Info">
+								<group>
+									<group>
+										<field name = "user_id"/>
+										<field name = "update_user_id"/>
+									</group>
+									<group>
+										<field name = "crt_date"/>
+										<field name = "update_date"/>
+									</group>
+								</group>
+							</page>	
+						</notebook>
+					</sheet>
+				</form>
+            </field>
+        </record>
+        <!-- Tree View -->
+        <record id="acc_temp_product_tree_view" model="ir.ui.view">
+            <field name="name">Temporary Product</field>
+            <field name="model">acc.temp.product</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+             <tree string="Temporary Product"> 
+				<field name="name"/>
+				<field name="default_code"/>
+				<field name="type"/>
+				<field name="uom_id"/>
+				<field name="categ_id"/>
+				<field name="standard_price"/>
+				<field name="list_price"/>		 
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search View Start -->
+	
+	<record id="acc_temp_product_search_view" model="ir.ui.view">
+		<field name="name">Temporary Product</field>
+		<field name="model">acc.temp.product</field>
+		<field name="arch" type="xml">
+			<search string="Temporary Product">
+				<field name="name" string="Name"  filter_domain="[('name','ilike',self)]" />
+				<field name="default_code" string="Product Code"  filter_domain="[('default_code','ilike',self)]" />
+			</search>
+		</field>
+	</record>
+            
+	<record id="action_acc_temp_product" model="ir.actions.act_window">  
+        <field name="name">Temporary Product</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">acc.temp.product</field>
+        <field name="view_mode">form,tree</field>
+        <field name="view_id" ref="acc_temp_product_tree_view"></field>
+        <field name="search_view_id" ref="acc_temp_product_search_view"/>
+    </record>
+
+        <menuitem
+            id="pm_acc_temp_product"
+            name="Temporary Product"
+            action="action_acc_temp_product"
+            parent="stock.menu_stock_inventory_control"
+            sequence="3" groups="acc_stock.group_temp_product"/>
+    </data>
+</openerp>

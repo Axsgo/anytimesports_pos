@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<!-- Form view -->
+        <record id="acc_prod_sub_category_form_view" model="ir.ui.view">
+            <field name="name">Product Sub-Category</field>
+            <field name="model">acc.product.sub.category</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+				<form string="Product Sub-Category">
+					<!-- <header>
+						<button name = "entry_approve" type = "object" string = "Approve" states = "draft" class = "oe_highlight"/>
+						<button name = "entry_draft" type = "object" string = "Set to Draft" states = "approved"/>
+						<button name = "entry_cancel" type = "object" string = "Cancel" states = "draft"/>
+						<field name="state" widget="statusbar"/>
+					</header> -->
+					<sheet> 
+						<group> 
+							<group>
+								<field name="name" required='1'/>
+								<field name="categ_id" domain="[('parent_id','!=',False)]" options="{'no_create': True, 'no_create_edit':True}" required='1'/>
+								<field name="company_id" required='0' options="{'no_create': True, 'no_create_edit':True}" groups="base.group_multi_company"/>
+							</group>
+						</group>
+					</sheet>
+				</form>
+            </field>
+        </record>
+        <!-- Tree View -->
+        <record id="acc_prod_sub_category_tree_view" model="ir.ui.view">
+            <field name="name">Product Sub-Category</field>
+            <field name="model">acc.product.sub.category</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+             <tree string="Product Sub-Category">
+				<field name="name" />
+				<field name="categ_id"/>
+				<field name="company_id" groups="base.group_multi_company"/>
+				<!-- <field name="state"/>  --> 			 
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search View Start -->
+	
+	<record id="acc_product_sub_category_search_view" model="ir.ui.view">
+		<field name="name">Product Sub-Category</field>
+		<field name="model">acc.product.sub.category</field>
+		<field name="arch" type="xml">
+			<search string="Product Sub-Category">
+				<field name="name" string="Name"  filter_domain="[('name','ilike',self)]" />
+				<field name="categ_id" string="Brand"  filter_domain="[('categ_id','ilike',self)]" />
+				<group expand="0" string="Group By...">
+					<filter name="categ_id" string="Brand" domain="[]" context="{'group_by':'categ_id'}"/>
+				</group>
+			</search>
+		</field>
+	</record>
+	
+	<!-- Search View End -->
+
+        <record id="action_acc_product_sub_category" model="ir.actions.act_window">  
+            <field name="name">Product Sub-Category</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">acc.product.sub.category</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="acc_prod_sub_category_tree_view"></field>
+            <field name="search_view_id" ref="acc_product_sub_category_search_view"/>
+        </record>
+
+        <!-- Menuitems -->
+    	<!-- <menuitem name="Product Sub-Category" id="pm_acc_product_sub_category" parent="acc_menus.pm_products" action="action_acc_product_sub_category" sequence='2'/> -->
+
+        <!-- Record Rule -->
+    	<record id="rule_acc_product_sub_category" model="ir.rule">
+            <field name="name">Product Sub-Category multi-company</field>
+            <field name="model_id" ref="model_acc_product_sub_category"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id','in',company_ids)]</field>
+        </record>         
+            
+    </data>
+</openerp>

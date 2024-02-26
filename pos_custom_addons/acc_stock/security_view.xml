@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<odoo>
+	<record id="group_temp_product" model="res.groups">
+        <field name="name">Enable Temporary Products</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+</odoo>

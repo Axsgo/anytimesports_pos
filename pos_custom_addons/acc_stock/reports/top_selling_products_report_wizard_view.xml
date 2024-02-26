@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="top_selling_products_report_view" model="ir.ui.view">
+		<field name="name">top.selling.products</field>
+		<field name="model">top.selling.products</field>
+		<field name="arch" type="xml">
+			<form>
+				<script>
+                    $(document).ready(function(){
+                       $('.modal-lg').css({'max-width': '1200px'});
+                    });
+        		</script>
+				<group>
+					<group>
+						<field name="order_by" required='1' />
+						<field name="from_date" attrs="{'invisible':[('order_by','!=','all')]}"/>
+						<field name="to_date" attrs="{'invisible':[('order_by','!=','all')]}"/>
+						<field name="categ_id" options="{'no_create': True, 'no_create_edit':True}" domain="[('parent_id','=',False)]" attrs="{'invisible':[('order_by','!=','all')]}"/>
+						<field name="brand_id" options="{'no_create': True, 'no_create_edit':True}" attrs="{'required':[('categ_id','!=',False)],'invisible':[('order_by','!=','all')]}"/>
+						<field name="brand_wise_page_break" attrs="{'invisible':[('order_by','!=','all')]}"/>
+						<field name="count" attrs="{'required':[('order_by','!=','all')],'invisible':[('order_by','=','all')]}"/>
+					</group>
+					<group>
+						<field name="crt_date" readonly="1"/>
+						<field name="company_id" readonly='1' options="{'no_create': True, 'no_create_edit':True}" groups="base.group_multi_company"/>
+					</group>
+				</group>
+				<!-- <button name="compute_reports"
+	                            type="object" string="Generate Details"
+	                            class="oe_highlight" invisible="1"/> -->
+				<group string ="Report Details" invisible="1">
+					<field name="report_product_detail_ids" nolabel='1' readonly="1">
+						<tree edit='false' delete="false" create='false' >
+							<field name='product_id' invisible="0"/>
+							<field name='code'/>
+							<field name='description'/>
+							<field name='brand_id' invisible="0"/>
+							<field name='qty'/>
+							<field name='total_value'/>
+						</tree>
+					</field>
+		       	</group>
+				<footer>
+					<button name="print_report_values"
+	                            type="object" string="Print PDF"
+	                            class="oe_highlight"/>
+					or					
+					<button string="Cancel" class="oe_link" special="cancel" />
+				</footer>
+			</form>
+		</field>
+	</record>
+
+	<record id="action_top_selling_products_report" model="ir.actions.act_window">
+		<field name="name">Product Valuation Report</field>
+		<field name="res_model">top.selling.products</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="view_mode">form</field>
+		<field name="view_id" ref="top_selling_products_report_view"/>
+		<field name="target">new</field>
+	</record>
+
+	<menuitem id="menu_top_selling_products"
+                  name="Product Valuation Report"
+                  action="action_top_selling_products_report"
+                  parent="stock.menu_warehouse_report"
+                  sequence="10"
+                  />
+</odoo>

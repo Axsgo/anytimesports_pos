@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<!-- Form view -->
+        <record id="acc_quote_validity_form_view" model="ir.ui.view">
+            <field name="name">Quotation Validity Period</field>
+            <field name="model">acc.quote.validity</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+				<form string="Quotation Validity Period">
+					<!-- <header>
+						<button name = "entry_approve" type = "object" string = "Approve" states = "draft" class = "oe_highlight"/>
+						<button name = "entry_draft" type = "object" string = "Set to Draft" states = "approved"/>
+						<button name = "entry_cancel" type = "object" string = "Cancel" states = "draft"/>
+						<field name="state" widget="statusbar"/>
+					</header> -->
+					<sheet> 
+						<group> 
+							<group>
+								<field name="name" required='1'/>
+								<field name="company_id" required='0' options="{'no_create': True, 'no_create_edit':True}" groups="base.group_multi_company"/>
+							</group>
+							<group>
+								<label for="code"/>
+								<div class='o_row'>
+									<field name="code" required='1'/> / Days
+								</div>
+								<field name="notes" required='0'/>
+							</group>
+						</group>
+						<notebook>
+							<page string = "Entry Info">
+								<group>
+									<group>
+										<field name = "user_id"/>
+										<field name = "update_user_id"/>
+										<!-- <field name = "ap_rej_user_id"  attrs = "{'invisible':[('state','=','draft')]}"/>
+										<field name = "cancel_user_id"  attrs = "{'invisible':[('state','!=','cancel')]}"/> -->
+									</group>
+									<group>
+										<field name = "crt_date"/>
+										<field name = "update_date"/>
+										<!-- <field name = "ap_rej_date"  attrs = "{'invisible':[('state','=','draft')]}"/>
+										<field name = "cancel_date"  attrs = "{'invisible':[('state','!=','cancel')]}"/> -->
+									</group>
+								</group>
+							</page>		
+						</notebook>
+					</sheet>
+				</form>
+            </field>
+        </record>
+        <!-- Tree View -->
+        <record id="acc_quote_validity_tree_view" model="ir.ui.view">
+            <field name="name">Quotation Validity Period</field>
+            <field name="model">acc.quote.validity</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+             <tree string="Quotation Validity Period" default_order = "crt_date desc"> 
+				<field name="crt_date"/>
+				<field name="user_id"/>
+				<field name="name" />
+				<field name="code"/>
+				<field name="company_id" groups="base.group_multi_company"/>
+				<!-- <field name="state"/>  --> 			 
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search View Start -->
+	
+	<record id="acc_quote_validity_search_view" model="ir.ui.view">
+		<field name="name">Quotation Validity Period</field>
+		<field name="model">acc.quote.validity</field>
+		<field name="arch" type="xml">
+			<search string="Quotation Validity Period">
+				<field name="name" string="Name"  filter_domain="[('name','ilike',self)]" />
+				<field name="code" string="Code"  filter_domain="[('code','ilike',self)]" />
+				<group expand="0" string="Group By...">
+					<filter name="crt_date" string="Creation Date" domain="[]" context="{'group_by':'crt_date'}"/> 
+					<filter name="user_id" string="Created By" domain="[]" context="{'group_by':'user_id'}"/>
+				</group>
+			</search>
+		</field>
+	</record>
+	
+	<!-- Search View End -->
+
+        <record id="action_acc_quote_validity" model="ir.actions.act_window">  
+            <field name="name">Quotation Validity Period</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">acc.quote.validity</field>
+            <field name="view_mode">form,tree</field>
+            <field name="view_id" ref="acc_quote_validity_tree_view"></field>
+            <field name="search_view_id" ref="acc_quote_validity_search_view"/>
+        </record>
+
+        <!-- Menuitems -->
+    	<menuitem name="Quotation Validity" id="pm_acc_quote_validity" parent="tpm_masters" action="action_acc_quote_validity" sequence='7'/>
+
+        <!-- Record Rule -->
+    	<record id="rule_acc_quote_validity" model="ir.rule">
+            <field name="name">Quotation Validity multi-company</field>
+            <field name="model_id" ref="model_acc_quote_validity"/>
+            <field eval="True" name="global"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id','in',company_ids)]</field>
+        </record>         
+            
+    </data>
+</openerp>

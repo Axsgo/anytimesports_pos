@@ -1,0 +1,16 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ax_costing_report,ax.costing.report,model_ax_costing_report,base.group_user,1,1,1,1
+access_ax_ch_costing_product_line,ax.ch.costing.product.line,model_ax_ch_costing_product_line,base.group_user,1,1,1,1
+access_ax_ch_landed_cost_line,ax.ch.landed.cost.line,model_ax_ch_landed_cost_line,base.group_user,1,1,1,1
+access_ax_ch_costing_line,ax.ch.costing.line,model_ax_ch_costing_line,base.group_user,1,1,1,1
+,,,,,,,
+access_stock_landed_cost_bill,stock.landed.cost.bill,model_stock_landed_cost_bill,base.group_user,1,1,1,1
+,,,,,,,
+access_ax_shipment_master,ax.shipment.master,model_ax_shipment_master,base.group_user,1,1,1,1
+
+access_acc_shipment_estimation_line,acc.shipment.estimation.line,model_acc_shipment_estimation_line,base.group_user,1,1,1,1
+
+access_acc_estimation,acc.estimation,model_acc_estimation,base.group_user,1,1,1,1
+access_acc_estimation_vendor_bill,acc.estimation.vendor.bill,model_acc_estimation_vendor_bill,base.group_user,1,1,1,1
+access_acc_estimation_clearance_bill,acc.estimation.clearance.bill,model_acc_estimation_clearance_bill,base.group_user,1,1,1,1
+access_acc_estimation_product_line,acc.estimation.product.line,model_acc_estimation_product_line,base.group_user,1,1,1,1
